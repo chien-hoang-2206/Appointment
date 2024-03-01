@@ -1,9 +1,8 @@
 
 import { Col, Row } from 'antd';
-import React from 'react';
 import { Link } from 'react-router-dom';
 import './Footer.css'
-import logo from "../../assets/logo/LogoPage.png";
+import logo from '../../assets/logo/header_logo.svg'
 import fb from "../../assets/icon/icon-facebook.png";
 import yt from "../../assets/icon/icon-youtube.png";
 import isg from "../../assets/icon/icon-intagram.png";
@@ -15,26 +14,25 @@ const Footer = () => {
                 <Col span={6}>
                     <Link to={"/"} className={["logo-wrap"]}>
                         <img className={'logo'} src={logo}></img>
-                        <p className={["logo-text"]}>PGT24h</p>
                     </Link>
                     <p className={'address'}>
-                        254 Nguyễn Văn Linh, PNam Dương,
+                        254 Nguyễn Văn Linh, Phường Nam Dương,
                         <br /> QHải Châu, TPĐà Nẵng
                     </p>
                 </Col>
                 <Col span={6}>
-                    <h3 className={'header'}>Về PGT24h</h3>
+                    <h3 className={'header'}>Về Medpro</h3>
                     <p className={'content'}>
-                        Câu chuyện về PGT24h <br /> Công việc
+                        Câu chuyện về Medpro <br /> Công việc
                     </p>
                 </Col>
                 <Col span={6}>
                     <h3 className={'header'}>Giải pháp</h3>
                     <p className={'content'}>
-                        PGT24h Professional
-                        <br /> PGT24h Review
+                        Medpro Professional
+                        <br /> Medpro Review
                         <br />
-                        PGT24h Commerce
+                        Medpro Commerce
                     </p>
                 </Col>
                 <Col span={6}>
@@ -58,10 +56,10 @@ const Footer = () => {
                     <img src={tt}></img>
                 </Col>
                 <Col span={4}>
-                    <p>Hotline: </p>
+                    <p>Hotline:  19002225</p>
                 </Col>
                 <Col span={8}>
-                    <p>Email: </p>
+                    <p>Email: Mdpro@gmail.com</p>
                 </Col>
             </Row>
         </div>

@@ -3,6 +3,7 @@
   background-color: fff;
   position: relative;
   bottom: 0px;
+  border-top: 1px solid #eaeaea;
 }
 
 .logo-wrap {
@@ -21,31 +22,26 @@
   margin: 0;
   bottom: 0;
   left: 100%;
-  color: white;
   font-size: 20px;
   font-weight: 600;
 }
 
 .address {
-  color: white;
   font-size: 14px;
 }
 
 .header {
-  color: white;
   margin: 0;
   font-size: 18px;
 }
 
 .content {
-  color: white;
   margin-top: 10px;
   line-height: 25px;
 }
 
 .footer-info {
   margin-top: 20px;
-  color: white;
   display: flex;
   flex-direction: row;
 }
