@@ -7,6 +7,7 @@ export default {
   theme: {
     colors: {
       'blue': '#1fb6ff',
+      'blue2': '##00b5f1',
       'purple': '#7e5bef',
       'pink': '#ff49db',
       'orange': '#ff7849',
@@ -27,6 +28,12 @@ export default {
       },
       borderRadius: {
         '4xl': '2rem',
+      },
+      textW: {
+        fontSize: '16px',
+        color: '#f0f0f0',
+        fontWeight: 400,
+        lineHeight: '25px'
       },
       liMenu: {
         backgroundColor: '#f0f0f0',
