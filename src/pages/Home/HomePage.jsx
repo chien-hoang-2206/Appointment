@@ -1,3 +1,4 @@
+/* eslint-disable no-dupe-keys */
 import { useEffect, useState } from 'react';
 import Logo from '../../assets/logo/header_logo.svg'
 import BG1 from '../../assets/images/bg_home_1.webp';
@@ -23,6 +24,7 @@ import Contact from '../../assets/icon/contact.svg';
 import ZLQR from '../../assets/icon/zaloqr.webp';
 import FBQR from '../../assets/icon/fbqr.webp';
 import Card from '../../components/Card/Card';
+import ButonBooking from '../../components/Button/ButonBooking';
 
 const HomePage = () => {
     const [index, setIndex] = useState(0);
@@ -109,10 +111,12 @@ const HomePage = () => {
             <div className="flex flex-col justify-center items-center bg-[#e8f2f7] pb-24"
                 style={{
                     background: '#E0EAFC',
-                    background: '-webkit - linear - gradient(to top, #CFDEF3, #E0EAFC)',
-                    background: 'linear - gradient(to top, #CFDEF3, #E0EAFC)',
+                    background: '-webkit-linear-gradient(to top, #CFDEF3, #E0EAFC)',
+                    background: 'linear-gradient(to top, #CFDEF3, #E0EAFC)',
                 }}
             >
+                {/* <div className="flex flex-col justify-center items-center bg-gradient-to-t from-blue-200 to-blue-300 pb-24"> */}
+
                 <div className="w-3/4 max-w-[1100px] flex flex-col gap-10 mt-10  bg-[#fff] p-8 rounded-2xl">
                     <div className="flex flex-row justify-center w-full gap-10 ">
                         <div className="flex flex-col w-2/5">
@@ -242,13 +246,7 @@ const HomePage = () => {
                     <span className='w-[600px]'>
                         Bệnh nhân chủ động chọn thông tin đặt khám nhanh (ngày khám, giờ khám và cơ sở y tế). Bệnh nhân sẽ nhận lấy số thứ tự trực tuyến ngay trên phần mềm
                     </span>
-                    <button
-                        style={{
-                            background: 'linear-gradient(83.63deg, #00b5f1 33.34%, #00e0ff 113.91%)'
-                        }}
-                        className='text-[#fff] hover:bg-[#e8f2f7] mt-4 border-[none] w-[200px] h-14 font-bold text-xl leading-[19px] text-white text-center p-[11px] rounded-[30px] border-transparent '>
-                        Đặt Lịch Ngay
-                    </button>
+                    <ButonBooking />
                 </div>
             </div>
 

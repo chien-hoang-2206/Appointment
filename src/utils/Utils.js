@@ -1,18 +1,19 @@
 import moment from 'moment'
 
 import regex from './regex'
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
-import { db } from '../firebase'
+// import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
+// import { db } from '../firebase'
 import { toast } from 'react-toastify'
 
 export const convertStringToNumber = (value, delimiter = '.') => {
     if (value || value === 0) {
-        return `${value.toString().replace(regex.formatMoney, delimiter)} VND`
+        return `${value.toString().replace(regex.formatMoney, delimiter)} đ`
     }
     return '0'
 }
 
 export const partStringToNumber = (value, delimiter = '.') => {
+    console.log("🚀 ~ partStringToNumber ~ value:", value)
     if (value || value === 0) {
         return `${value.toString().replace(regex.formatMoney, delimiter)}`
     }
@@ -58,7 +59,7 @@ export const ToastNotiError = (mes = 'Hệ thống lỗi') => {
     });
 }
 
-export const getDate = (timestamp, type = 3) => {
+export const getDate = (timestamp, type = 1) => {
     if (timestamp == null) {
         return null;
     }

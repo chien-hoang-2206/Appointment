@@ -4,23 +4,26 @@ import hp from '../../assets/logo/hp.svg'
 import { useNavigate } from "react-router-dom";
 import { useEffect } from 'react';
 import debounce from 'lodash/debounce';
+import DropdownHeader from '../Dropdown/DropdownHeader/DropdownHeader';
+import { Link } from 'react-router-dom';
+import { Dropdown } from 'antd';
+import { Space } from 'antd';
+import { DownOutlined } from '@ant-design/icons';
 const Header = () => {
     const navigate = useNavigate();
     const [isHidden, setIsHidden] = useState(false);
-    const [lastScrollY, setLastScrollY] = useState(false);
 
     useEffect(() => {
         // Sử dụng debounce để giảm tần suất gọi hàm handleScroll
         const debouncedHandleScroll = debounce(() => {
             const currentScrollY = window.scrollY;
 
-            if (currentScrollY > lastScrollY) {
+            if (currentScrollY > 120) {
                 setIsHidden(true);
             } else {
                 setIsHidden(false);
             }
-            setLastScrollY(currentScrollY)
-        }, 100);
+        }, 10);
         window.addEventListener('scroll', debouncedHandleScroll);
         return () => {
             window.removeEventListener('scroll', debouncedHandleScroll);
@@ -30,26 +33,63 @@ const Header = () => {
         navigate("/");
     };
 
+    const items = [
+        {
+            label: (
+                <Link target="_blank" rel="noopener noreferrer" to="/create-question">
+                    Đặt câu hỏi
+                </Link>
+            ),
+            key: '0',
+        },
+        {
+            label: (
+                <Link target="_blank" rel="noopener noreferrer" to="/create-question">
+                    Câu hỏi của bạn
+                </Link>
+            ),
+            key: '0',
+        },
+        {
+            label: (
+                <Link target="_blank" rel="noopener noreferrer" to="/question">
+                    Hỏi đáp
+                </Link >
+            ),
+            key: '1',
+        }
+    ];
+
     return (
         <div
             style={{
-                backgroundColor: `rgba(255, 255 ,255, 0.88)`, // Màu đen có độ trong suốt 50%
+                backgroundColor: `rgba(255, 255 ,255, 0.88)`,
+                // opacity: isHidden ? 0 : 1,
+                transform: isHidden ? 'translateY(-56px) translateZ(0px)' : 'none',
+                transition: 'display 0.25s ease-in-out, opacity 0.2s ease-in-out, transform 0.2s ease-in-out',
             }}
-            className='sticky top-0  z-20 w-full gap-7 justify-center items-center flex flex-row px-[20%] shadow-[0_10px_20px_rgba(0,0,0,0.04),0_2px_6px_rgba(0,0,0,0.04),0_0_1px_rgba(0,0,0,0.04)] '
+            className='sticky top-0  z-20 w-full gap-7 justify-center items-center flex flex-row px-[5%] shadow-[0_10px_20px_rgba(0,0,0,0.04),0_2px_6px_rgba(0,0,0,0.04),0_0_1px_rgba(0,0,0,0.04)] '
         >
-            <div className="">
-                <img onClick={goHome} className='h-16 w-28' src={Logo} alt='logo' />
+            <div className=""
+                style={{
+                    backgroundColor: `rgba(255, 255 ,255, 0.88)`,
+                    // opacity: isHidden ? 0 : 1,
+                    transform: isHidden ? 'translateY(26px) translateZ(0px)' : 'none',
+                    transition: 'display 0.25s ease-in-out, opacity 0.2s ease-in-out, transform 0.2s ease-in-out',
+                }}
+            >
+                <img onClick={goHome} className='cursor-pointer h-26 w-28' src={Logo} alt='logo' />
             </div>
             <div >
-
                 <div className="flex flex-col items-center justify-between mr-auto  max-w-[90%]">
                     <div
-                        style={{
-                            backgroundColor: `rgba(255, 255 ,255, 0.88)`, // Màu đen có độ trong suốt 50%
-                            opacity: isHidden ? 0 : 1, // Ẩn hoặc hiện phần tử dựa trên trạng thái của isHidden
-                            transition: 'opacity 0.5s ease-in-out', // Hiệu ứng mềm mại khi thay đổi opacity
-                            display: isHidden ? 'none' : 'flex'
-                        }} className="h-[50px] w-full flex flex-row gap-7 justify-between">
+                        // style={{
+                        //     opacity: isHidden ? 0 : 1,
+                        //     transform: isHidden ? 'translateY(-25px) translateZ(0px) translateX(-20px)' : 'none',
+                        //     height: isHidden ? '0px' : '59px',
+                        //     transition: 'display 0.25s ease-in-out, opacity 0.4s ease-in-out, transform 0.4s ease-in-out', // Thêm transition cho opacity và transform
+                        // }}
+                        className="h-[50px] bg-[rgba(255, 255 ,255, 0.88)] w-full flex flex-row gap-7 justify-between">
                         <div className="min-w-[600px] flex flex-row justify-start items-center"  >
                             <button className="h-6 inline-flex items-center gap-2 justify-center px-4 py-4 font-sans font-semibold tracking-wide text-white bg-blue-500 rounded-lg ">
                                 <span>
@@ -62,7 +102,7 @@ const Header = () => {
                                 </span>
                                 <span>Tiktok</span>
                             </button>
-                            <div className='h-4 border-l-2 border-l-gray border-solid ' />
+                            <div className='h-4 border-l-2 border-l-gray border-solid' />
 
                             <button className='h-6 inline-flex items-center gap-2 justify-center px-4 py-4 font-sans font-semibold tracking-wide text-white bg-blue-500 rounded-lg'>
                                 <span>
@@ -84,39 +124,49 @@ const Header = () => {
                                 <span>Youtube</span>
                             </button>
                         </div>
-
-                        <div className="flex flex-col items-center justify-center">
-                            <button className=" inline-flex rounded-2xl border border-solid border-blue items-center gap-2 justify-center px-4 py-1 font-sans font-semibold tracking-wide text-blue bg-blue-500 h-[32px]">
-                                <span>
-                                    <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" aria-label="Icon User" height="15" width="15" xmlns="http://www.w3.org/2000/svg"><path d="M256 288c79.5 0 144-64.5 144-144S335.5 0 256 0 112 64.5 112 144s64.5 144 144 144zm128 32h-55.1c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16H128C57.3 320 0 377.3 0 448v16c0 26.5 21.5 48 48 48h416c26.5 0 48-21.5 48-48v-16c0-70.7-57.3-128-128-128z"></path></svg>
-                                </span>
-                                <span className='w-20'>Tài khoản</span>
-                            </button>
-                        </div>
+                        <DropdownHeader isHidden={isHidden}>
+                            <span className='w-20'>
+                                {'Tài khoản'}
+                            </span>
+                        </DropdownHeader>
                     </div>
                 </div>
-                <div className="h-[70px] flex flex-row border-t-gray-light border-t border-solid">
+                <div className={`h-[70px] flex flex-row border-t-gray-light  border-solid ${!isHidden ? 'border-t' : ''}`}>
                     <div className="flex flex-row py-5  items-center gap-3">
                         <img className='h-10' src={hp} />
                         <div className="min-w-[160px] flex w-full flex-col justify-center">
-                            <span className=''>Hỗ trợ đặt khám</span>
+                            <span className='font-bold'>Hỗ trợ đặt khám</span>
                             <span className='text-[25px] font-bold text-[#ffb54a] leading-[29.3px] mb-0'>19002225</span>
                         </div>
                     </div>
                     <div className="flex items-center w-full pl-5 flex-row">
                         <ul className="w-full flex items-center justify-end  gap-3">
-                            <li className="text-base li-menu cursor-pointer hover:text-blue flex items-center font-semibold flex-row">
+
+                            <Link to='/doctor' className="text-base li-menu cursor-pointer hover:text-blue flex items-center font-semibold flex-row">
                                 <span>
                                     CHUYÊN GIA - BÁC SĨ
                                 </span>
-                                <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 1024 1024" aria-label="Icon Caret Down" height="15" width="15" xmlns="http://www.w3.org/2000/svg"><path d="M840.4 300H183.6c-19.7 0-30.7 20.8-18.5 35l328.4 380.8c9.4 10.9 27.5 10.9 37 0L858.9 335c12.2-14.2 1.2-35-18.5-35z"></path></svg>
-                            </li>
-                            <li className="text-base li-menu cursor-pointer hover:text-blue flex items-center font-semibold flex-row">
-                                HỎI ĐÁP
-                            </li>
-                            <li className="text-base li-menu cursor-pointer hover:text-blue flex items-center font-semibold flex-row">
+
+                            </Link>
+
+                            <Dropdown
+                                menu={{
+                                    items,
+                                }}
+                            >
+                                <a onClick={(e) => e.preventDefault()}>
+                                    <Space>
+                                        <Link to='/question' className="text-base li-menu cursor-pointer hover:text-blue flex items-center font-semibold flex-row">
+                                            HỎI ĐÁP
+                                        </Link>
+                                        <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 1024 1024" aria-label="Icon Caret Down" height="15" width="15" xmlns="http://www.w3.org/2000/svg"><path d="M840.4 300H183.6c-19.7 0-30.7 20.8-18.5 35l328.4 380.8c9.4 10.9 27.5 10.9 37 0L858.9 335c12.2-14.2 1.2-35-18.5-35z"></path></svg>
+                                    </Space>
+                                </a>
+                            </Dropdown>
+
+                            <Link to='/booking' className="text-base li-menu cursor-pointer hover:text-blue flex items-center font-semibold flex-row">
                                 ĐẶT LỊCH KHÁM
-                            </li>
+                            </Link>
                         </ul>
                     </div>
                 </div>
