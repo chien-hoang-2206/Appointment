@@ -8,7 +8,6 @@ import DropdownHeader from '../Dropdown/DropdownHeader/DropdownHeader';
 import { Link } from 'react-router-dom';
 import { Dropdown } from 'antd';
 import { Space } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
 const Header = () => {
     const navigate = useNavigate();
     const [isHidden, setIsHidden] = useState(false);
