@@ -35,27 +35,27 @@ const Header = () => {
     const items = [
         {
             label: (
-                <Link target="_blank" rel="noopener noreferrer" to="/create-question">
+                <button onClick={() => navigate('/create-question')}  target="_blank" rel="noopener noreferrer" to="/create-question">
                     Đặt câu hỏi
-                </Link>
+                </button>
             ),
             key: '0',
         },
         {
             label: (
-                <Link target="_blank" rel="noopener noreferrer" to="/create-question">
+                <button  onClick={() => navigate('/question?type=1')}  target="_blank" rel="noopener noreferrer" to="/create-question">
                     Câu hỏi của bạn
-                </Link>
-            ),
-            key: '0',
-        },
-        {
-            label: (
-                <Link target="_blank" rel="noopener noreferrer" to="/question">
-                    Hỏi đáp
-                </Link >
+                </button >
             ),
             key: '1',
+        },
+        {
+            label: (
+                <button   onClick={() => navigate('/question')}  target="_blank" rel="noopener noreferrer" to="/question">
+                    Tất cả hỏi đáp
+                </button >
+            ),
+            key: '2',
         }
     ];
 
@@ -155,9 +155,9 @@ const Header = () => {
                             >
                                 <a onClick={(e) => e.preventDefault()}>
                                     <Space>
-                                        <Link to='/question' className="text-base li-menu cursor-pointer hover:text-blue flex items-center font-semibold flex-row">
+                                        <button onClick={() => navigate('/question')} className="text-base li-menu cursor-pointer hover:text-blue flex items-center font-semibold flex-row">
                                             HỎI ĐÁP
-                                        </Link>
+                                        </button>
                                         <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 1024 1024" aria-label="Icon Caret Down" height="15" width="15" xmlns="http://www.w3.org/2000/svg"><path d="M840.4 300H183.6c-19.7 0-30.7 20.8-18.5 35l328.4 380.8c9.4 10.9 27.5 10.9 37 0L858.9 335c12.2-14.2 1.2-35-18.5-35z"></path></svg>
                                     </Space>
                                 </a>

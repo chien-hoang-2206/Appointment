@@ -25,6 +25,7 @@ import ZLQR from '../../assets/icon/zaloqr.webp';
 import FBQR from '../../assets/icon/fbqr.webp';
 import Card from '../../components/Card/Card';
 import ButonBooking from '../../components/Button/ButonBooking';
+import { useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
     const [index, setIndex] = useState(0);
@@ -50,7 +51,7 @@ const HomePage = () => {
         setIndex(0);
         setPlaceholder("");
     };
-
+    const navigator = useNavigate()
     return (
         <div className='w-full  flex  flex-col justify-center'>
             <div className='flex  flex-col justify-center items-center w-full h-[600px]' style={{ backgroundSize: 'cover', background: `url(${BG1})` }}>
@@ -77,27 +78,27 @@ const HomePage = () => {
                 <div className="flex flex-col ">
                     <div className='relative pt-40'>
                         <div className="flex flex-row gap-4">
-                            <div className="w-32 h-32 rounded-xl gap-3 flex-col bg-[#fff] flex justify-center items-center">
+                            <button  onClick={() => navigator('/booking?type=1')}  className="w-32 h-32 hover:shadow  rounded-xl gap-3 flex-col bg-[#fff] flex justify-center items-center">
                                 <img className='w-12' src={CAL} />
-                                <p className='text-xs text-center  w-[70px] break-all'>Đặt khám tại cơ sở</p>
-                            </div>
-                            <div className="w-32 h-32 rounded-xl gap-3 flex-col bg-[#fff] flex justify-center items-center">
+                                <p className='text-xs text-center  border-none w-[70px] break-all'>Đặt khám tại cơ sở</p>
+                            </button>
+                            <button  onClick={() => navigator('/booking?type=2')}   className="w-32 hover:shadow   h-32 rounded-xl gap-3 flex-col bg-[#fff] flex justify-center items-center">
                                 <img className='w-12' src={ICH2} />
-                                <p className='text-xs text-center  w-[80px] break-all'>Đặt khám theo bác sĩ</p>
-                            </div>
-                            <div className="w-32 h-32 rounded-xl gap-3 flex-col bg-[#fff] flex justify-center items-center">
+                                <p className='border-none text-xs text-center  w-[80px] break-all'>Đặt khám theo bác sĩ</p>
+                            </button>
+                            <button onClick={()=> navigator('/question')} className="w-32 h-32 hover:shadow    rounded-xl gap-3 flex-col bg-[#fff] flex justify-center items-center">
                                 <img className='w-12' src={ICH3} />
-                                <p className='text-xs text-center w-[110px] break-all'>Tư vấn khám bệnh qua tin nhắn</p>
-                            </div>
-                            <div className="w-32 h-32 rounded-xl gap-3 flex-col bg-[#fff] flex justify-center items-center">
+                                <p className='text-xs text-center w-[105px] break-all'>Tư vấn khám bệnh trực tuyến</p>
+                            </button>
+                            <div className="w-32 h-32 hover:shadow    rounded-xl gap-3 flex-col bg-[#fff] flex justify-center items-center">
                                 <img className='w-12' src={ICH4} />
                                 <p className='text-xs text-center  w-[67px] break-all'>Đặt lịch xét nghiệm</p>
                             </div>
-                            <div className="w-32 h-32 rounded-xl gap-3 flex-col bg-[#fff] flex justify-center items-center">
+                            <div className="w-32 h-32 hover:shadow    rounded-xl gap-3 flex-col bg-[#fff] flex justify-center items-center">
                                 <img className='w-12' src={ICH5} />
                                 <p className='text-xs text-center  w-[60px] break-all'>Gói khám sức khỏe</p>
                             </div>
-                            <div className="w-32 h-32 rounded-xl gap-3 flex-col bg-[#fff] flex justify-center items-center">
+                            <div className="w-32 h-32 hover:shadow    rounded-xl gap-3 flex-col bg-[#fff] flex justify-center items-center">
                                 <img className='w-12' src={ICH6} />
                                 <p className='text-xs text-center  w-[70px] break-all'>Đặt lịch tiêm chủng</p>
                             </div>

@@ -1,11 +1,8 @@
-import { Button } from "@mui/material";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import BookingAtFacility from "../../components/BookingChild/BookingAtFacility";
 import BG1 from '../../assets/images/bg-book.png'
 import { useForm } from "react-hook-form";
-import { useEffect } from "react";
 import ChooseSpecialty from "../../components/BookingChild/ChooseSpecialty";
 import ChooseDoctor from "../../components/BookingChild/ChooseDoctor";
 import ChooseService from "../../components/BookingChild/ChooseService";
@@ -13,19 +10,30 @@ import ChooseDate from "../../components/BookingChild/ChooseDate";
 import ChooseProfile from "../../components/BookingChild/ChooseProfile";
 import AppointmentInfo from "../../components/AppointmentInfo/AppointmentInfo";
 import ValidatePayment from "../../components/BookingChild/ValidatePayment";
-import { toast } from "react-toastify";
 import { ToastNoti } from "../../utils/Utils";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
 const BookingPage = () => {
-    const [type, setType] = useState()
-    const { register, handleSubmit, setValue, watch, } = useForm();
+    const location = useLocation();
+    // Lấy query string từ URL
+    const searchParams = new URLSearchParams(location.search);
+    // Lấy giá trị của tham số type từ query string
+    const type = searchParams.get('type');
+    const { handleSubmit, setValue, watch, } = useForm();
+    const [typeChoose, setType] = useState()
     const [step, setStep] = useState(1)
     const watchFacility = watch('Facility')
     const watchDataSubmit = watch()
     const watcDoctor = watch('Doctor')
     const watchSpecialty = watch('Specialty')
     const watchShift = watch('Shift')
+    useEffect(() => {
+        setType(type)
+        setValue('Type', type)
+        setStep(2)
+    }, [type])
     function handleChooseType(type) {
         setType(type)
         setValue('Type', type)
@@ -35,9 +43,9 @@ const BookingPage = () => {
         setValue('Facility', id)
         setStep(3)
     }
-    function handleChangeDoctor(id) {
+    function handleChangeDoctor(id, step = 4) {
         setValue('Doctor', id)
-        setStep(4)
+        setStep(step)
     }
     function handleChangeSpecialty(id, step) {
         setValue('Specialty', id)
@@ -128,17 +136,17 @@ const BookingPage = () => {
                 <div className="flex w-full">
                     <div className="flex w-full justify-center items-center">
                         {step === 2 &&
-                            <BookingAtFacility onChangeFacility={(id) => handleChangeFacility(id)} />
+                            <BookingAtFacility type={typeChoose} onChangeFacility={(id) => handleChangeFacility(id)} />
 
                         }
-                        {watchFacility && step === 3 && parseInt(type) === 1 &&
+                        {watchFacility && step === 3 && parseInt(typeChoose) === 1 &&
                             <ChooseSpecialty
                                 value={watchFacility}
                                 goBack={handleGoback}
                                 onChangeSpecialty={(id) => handleChangeSpecialty(id, 4)}
                             />
                         }
-                        {watchFacility && step === 3 && parseInt(type) === 2 &&
+                        {watchFacility && step === 3 && parseInt(typeChoose) === 2 &&
                             <ChooseDoctor
                                 goBack={handleGoback}
                                 value={watchFacility}
@@ -147,8 +155,11 @@ const BookingPage = () => {
                         }
                         {watchSpecialty && step === 4 &&
                             <>
-                                sss
-                                {/* <ChooseSpecialty value={watchFacility} onChangeSpecialty={(id) => handleChangeSpecialty(id)} /> */}
+                                <ChooseDoctor
+                                    goBack={handleGoback}
+                                    value={watchFacility}
+                                    onChangeDoctor={(id) => handleChangeDoctor(id, 5)}
+                                />
                             </>
                         }
                         {watcDoctor && step === 4 &&
