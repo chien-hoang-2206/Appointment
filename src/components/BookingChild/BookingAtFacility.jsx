@@ -1,4 +1,4 @@
-import { Button, Pagination } from "@mui/material";
+import { Pagination } from "@mui/material";
 import InputSearch from "../Input/InputSearch";
 import CardCustom from "../Card/CardCustom";
 import ButonBooking from "../Button/ButonBooking";
@@ -8,21 +8,22 @@ import BG1 from '../../assets/images/bg-book.png'
 import IcLocation from '../../assets/icon/ic-location.svg'
 
 const BookingAtFacility = (props) => {
+    const { type, onChangeFacility } = props
     const [page, setPage] = useState(0);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
     const handleClickFacility = (id) => {
-        props.onChangeFacility(1)
+        onChangeFacility(1)
     };
     return (
         <div className="flex flex-col w-full bg-blue3 ">
-            <div className="flex py-24 h-[500px]" style={{ background: `url(${BG1})`, backgroundSize: 'cover' }}>
+            <div className="flex py-24 h-[300px]" style={{ background: `url(${BG1})`, backgroundSize: 'cover' }}>
                 <div className='w-full flex flex-col items-left justify-start px-[20%] ' >
                     <div className="bg-[#fff] flex flex-col gap-3 w-[850px] cursor-pointer text-left p-8  rounded-3xl border border-[#fff] shadow-md">
                         <span className="flex flex-col text-4xl font-bold text-blue2">
-                            Đặt khám theo cơ sở
+                            Đặt khám theo  {`${parseInt(type) === 1 ? 'cơ sở' : 'bác sĩ'}`}
                         </span>
                         <span className="text-2xl  text-gray w-full leading-10">
                             Đặt khám nhanh chóng, tiết kiệm thời gian, an toàn tiện lợi

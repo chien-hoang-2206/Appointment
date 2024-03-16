@@ -70,6 +70,7 @@ const DropdownHeader = () => {
                         </div>
                         <NavLink
                             to='/user?key=records'
+                            onClick={() => handleClose()}
                             className="px-3 py-2 hover:bg-blue3 flex flex-row gap-2 items-center font-bold rounded cursor-pointer hover:text-blue-500 hover:bg-blue-50"
                         >
                             <img src={HM1} alt="" />
@@ -77,6 +78,7 @@ const DropdownHeader = () => {
                         </NavLink>
                         <NavLink
                             to='/user?key=appointment'
+                            onClick={() => handleClose()}
                             className="px-3 py-2 hover:bg-blue3 flex flex-row gap-2 items-center font-bold rounded cursor-pointer hover:text-blue-500 hover:bg-blue-50"
                         >
                             <img src={HM2} alt="" />
@@ -84,12 +86,14 @@ const DropdownHeader = () => {
                         </NavLink>
                         <NavLink
                             to='/user?key=notifications'
+                            onClick={() => handleClose()}
                             className="px-3 py-2 hover:bg-blue3 flex flex-row gap-2 items-center font-bold rounded cursor-pointer hover:text-blue-500 hover:bg-blue-50"
                         >
                             <img src={HM2} alt="" />
                             Thông báo
                         </NavLink>
                         <div
+                            onClick={() => handleClose()}
                             className="px-3 py-2 hover:bg-blue3 text-red flex flex-row gap-2 items-center font-bold rounded cursor-pointer hover:text-blue-500 hover:bg-blue-50"
                         >
                             <img src={ICLG} alt="" />
