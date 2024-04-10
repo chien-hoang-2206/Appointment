@@ -41,7 +41,7 @@ const ButonBooking = props => {
                 background: 'linear-gradient(83.63deg, #00b5f1 33.34%, #00e0ff 113.91%)',
                 ...getSizeStyles(),
             }}
-            onClick={() => navigate('/booking')}
+            onClick={() => onClick ? onClick() : navigate('/booking')}
             className='text-[#fff] hover:bg-[#e8f2f7] border-[none] w-[200px] h-12 font-bold text-xl leading-[19px] text-white text-center p-[11px] rounded-[30px] border-transparent ' >
             <span className='font-bold'>
                 {children ?? 'Đặt Lịch Ngay'}

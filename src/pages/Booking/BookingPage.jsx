@@ -21,6 +21,7 @@ const BookingPage = () => {
     const searchParams = new URLSearchParams(location.search);
     // Lấy giá trị của tham số type từ query string
     const type = searchParams.get('type');
+    console.log("🚀 ~ BookingPage ~ type:", type)
     const { handleSubmit, setValue, watch, } = useForm();
     const [typeChoose, setType] = useState()
     const [step, setStep] = useState(1)
@@ -30,9 +31,11 @@ const BookingPage = () => {
     const watchSpecialty = watch('Specialty')
     const watchShift = watch('Shift')
     useEffect(() => {
-        setType(type)
-        setValue('Type', type)
-        setStep(2)
+        if (type) {
+            setType(type)
+            setValue('Type', type)
+            setStep(2)
+        }
     }, [type])
     function handleChooseType(type) {
         setType(type)
@@ -137,7 +140,6 @@ const BookingPage = () => {
                     <div className="flex w-full justify-center items-center">
                         {step === 2 &&
                             <BookingAtFacility type={typeChoose} onChangeFacility={(id) => handleChangeFacility(id)} />
-
                         }
                         {watchFacility && step === 3 && parseInt(typeChoose) === 1 &&
                             <ChooseSpecialty
@@ -153,16 +155,17 @@ const BookingPage = () => {
                                 onChangeDoctor={(id) => handleChangeDoctor(id)}
                             />
                         }
-                        {watchSpecialty && step === 4 &&
+                        {watchSpecialty && typeChoose == 1 && step === 4 &&
                             <>
                                 <ChooseDoctor
                                     goBack={handleGoback}
-                                    value={watchFacility}
+                                    valueBranch={watchFacility}
+                                    value={watchSpecialty}
                                     onChangeDoctor={(id) => handleChangeDoctor(id, 5)}
                                 />
                             </>
                         }
-                        {watcDoctor && step === 4 &&
+                        {watcDoctor && watchSpecialty && typeChoose == 2 && step === 4 &&
                             <ChooseSpecialty
                                 value={watchFacility}
                                 goBack={handleGoback}

@@ -63,7 +63,6 @@ const headCells = [
         disablePadding: false,
         label: 'Trạng thái',
         component: (data, index) => {
-            console.log("🚀 ~ data:", data)
             return (
                 <Tag color={Constants.labelStatus.find(item => item?.value === data?.status)?.status}>{Constants.labelStatus.find(item => item?.value === data?.status)?.label}</Tag>
             )

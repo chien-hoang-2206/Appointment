@@ -45,11 +45,12 @@ const ChooseProfile = props => {
                         </span>}
                         description={
                             <div className='flex flex-col gap-2 w-full pt-3'>
-                                <Record value={1} onClickBox={(value) => handleClickProfile(value)} />
+                                <Record isBooking value={1} onClickBox={(value) => handleClickProfile(value)} />
                                 <Button
                                     startIcon={<ArrowBackIosNewIcon />}
                                     onClick={goBack}
-                                    className='w-28' href="#text-buttons" onClick={() => goBack()}>
+                                    className='w-28' href="#text-buttons"
+                                >
                                     Quay lại
                                 </Button>
                             </div>

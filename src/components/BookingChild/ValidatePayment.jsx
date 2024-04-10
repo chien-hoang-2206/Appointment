@@ -109,10 +109,15 @@ const DescriptionPayment = props => {
                 <div className="flex flex-row justify-between">
                     <Button
                         startIcon={<ArrowBackIosNewIcon />}
-                        className='w-28' href="#text-buttons" onClick={() => goBack()}>Quay lại</Button>
+                        className='w-28' href="#text-buttons" o
+                        nClick={() => goBack()}
+                    >Quay lại</Button>
                     <Button
                         variant="contained"
-                        className='w-36' href="#text-buttons" onClick={() => onClickPayment()}>Xác nhận</Button>
+                        className='w-36' href="#text-buttons"
+                        onClick={() => onClickPayment()}
+                    >
+                        Xác nhận</Button>
                 </div>
             </div>
         </>
@@ -120,7 +125,7 @@ const DescriptionPayment = props => {
 }
 
 const ValidatePayment = (props) => {
-    function onClickSubmit(){
+    function onClickSubmit() {
         console.log('ssssss');
         props.onClickSubmit()
     }

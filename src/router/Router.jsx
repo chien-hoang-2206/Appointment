@@ -14,6 +14,8 @@ import QuestionPage from "../pages/QuestionPage/QuestionPage";
 import DoctorPage from "../pages/DoctorPage/DoctorPage";
 import BookingPage from "../pages/Booking/BookingPage";
 import CreateQuestionPage from "../pages/QuestionPage/CreateQuestionPage";
+import HomeAdmin from "../pages/Admin/HomeAdmin";
+import CreateProfilePage from "../pages/CreateProfile/CreateProfile";
 
 
 const Router = () => {
@@ -43,6 +45,12 @@ const Router = () => {
           path="/appointments/:id" element={
             <Layout>
               <AppointmentsPage />
+            </Layout>}
+        />
+        <Route
+          path="/create-profile" element={
+            <Layout>
+              <CreateProfilePage />
             </Layout>}
         />
         <Route
@@ -81,10 +89,13 @@ const Router = () => {
               <Home />
             </LayoutSideBar>}
         /> */}
-        {/* <Route
+        <Route
           path="/admin"
-          element=<ProtectedRoute Component={HomeAdmin} role={"ADMIN"} />
-        /> */}
+          element=
+          {
+            <ProtectedRoute Component={HomeAdmin} role={"ADMIN"} />
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

@@ -1,21 +1,20 @@
-import { useState, useEffect, createContext } from "react";
-// import { GoogleAuthProvider, signInWithRedirect, signOut } from "firebase/auth";
-// import { auth } from "../firebase";
+import React, { useState, useEffect, createContext, useContext } from "react";
+import { GoogleAuthProvider, onAuthStateChanged, signInWithRedirect, signOut } from "firebase/auth";
+import { auth } from "../firebase";
 export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => JSON.parse(localStorage.getItem("user")));
 
   // Sign in with Google
-  // const signInWithGoogle = () => {
-  //   const provider = new GoogleAuthProvider();
-  //   signInWithRedirect(auth, provider);
-  // };
+  const signInWithGoogle = () => {
+    const provider = new GoogleAuthProvider();
+    signInWithRedirect(auth, provider);
+  };
   // Sign out
-  // const logout = () => {
-  //   signOut(auth);
-  //   // Also clear the local storage
-  //   localStorage.removeItem("user");
-  // };
+  const logout = () => {
+    setUser(null)
+    signOut(auth);
+  };
 
   useEffect(() => {
     const handleStorageChange = () => {
@@ -28,8 +27,7 @@ export const AuthProvider = ({ children }) => {
     return () => window.removeEventListener("storage", handleStorageChange);
   }, [user]);
   return (
-    // <AuthContext.Provider value={{ user, setUser, signInWithGoogle, logout }}>
-    <AuthContext.Provider value={{ user, setUser }}>
+    <AuthContext.Provider value={{ user, setUser, signInWithGoogle, logout }}>
       {children}
     </AuthContext.Provider>
   );

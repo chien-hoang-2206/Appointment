@@ -4,12 +4,29 @@ import InputSearch from '../Input/InputSearch';
 import DescriptionDoctor from '../Description/DescriptionDoctor/DescriptionDoctor';
 import { Button } from '@mui/material';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import { useEffect, useState } from 'react';
+import Factories from '../../services/FactoryApi';
+import { ToastNotiError } from '../../utils/Utils';
 
 const ChooseDoctor = props => {
-    const { goBack, value, onChangeDoctor } = props
+    const { goBack, valueBranch, value, onChangeDoctor } = props
     function handleChangeDoctor(id) {
         onChangeDoctor(id)
     }
+    const [listData, setListData] = useState([]);
+    const fetchData = async () => {
+        try {
+            const response = await Factories.getBranchList(null, valueBranch);
+            let list = response?.departments?.find(item => item?._id == value)
+            setListData(list);
+        } catch (error) {
+            ToastNotiError(error);
+        }
+    };
+    useEffect(() => {
+        fetchData();
+    }, [value]);
+
     return (
         <div className="flex flex-col w-full bg-blue3 justify-center items-center ">
             <div className=" py-24 w-[70%] md:gap-4 md:flex-col lg:flex lg:flex-row justify-start items-start lg:gap-5">
@@ -44,6 +61,14 @@ const ChooseDoctor = props => {
                                 />
 
                                 <div className='max-h-[600px] gap-3 flex flex-col overflow-scroll mt-4 w-full border-b border-b-gray-light mb-1'>
+                                    {listData?.doctors?.map(item => (
+                                        <BoxCustom
+                                            isCanHover={false}
+                                            key={item?._id}
+                                            onClick={() => handleChangeDoctor(item?._id)}
+                                            description={<DescriptionDoctor data={item} />}
+                                        />))
+                                    }
                                     <BoxCustom
                                         onClick={() => handleChangeDoctor(2)}
                                         description={<DescriptionDoctor />}
@@ -61,7 +86,7 @@ const ChooseDoctor = props => {
                                 <Button
                                     startIcon={<ArrowBackIosNewIcon />}
                                     onClick={goBack}
-                                    className='w-28' href="#text-buttons" onClick={() => goBack()}>Quay lại</Button>
+                                    className='w-28' href="#text-buttons">Quay lại</Button>
                             </div>
                         }
                     />

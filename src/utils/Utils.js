@@ -46,6 +46,18 @@ export const ToastNoti = (mes = 'Lưu dữ liệu thành công') => {
         theme: "light",
     });
 }
+export const ToastDel = (mes = 'Đã xoá dữ liệu thành công') => {
+    toast.success(mes, {
+        position: "top-right",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+    });
+}
 export const ToastNotiError = (mes = 'Hệ thống lỗi') => {
     toast.error(mes, {
         position: "top-right",
@@ -69,7 +81,7 @@ export const getDate = (timestamp, type = 1) => {
             result = moment(timestamp).format('DD/MM/YYYY');
             break;
         case 2:
-            result = moment(timestamp).format('DD.MM.yyyy - HH:mm');
+            result = moment(timestamp).format('YYYY-MM-DD');
             break;
         case 3:
             result = moment(timestamp).format('yyyy-MM-DD');
@@ -97,6 +109,9 @@ export const getDate = (timestamp, type = 1) => {
             break;
         case 11:
             result = moment(timestamp).format('MM/YYYY');
+            break;
+        case 12:
+            result = moment(timestamp).format('DD.MM.yyyy - HH:mm');
             break;
         default:
             break;

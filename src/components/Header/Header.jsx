@@ -124,9 +124,6 @@ const Header = () => {
                             </button>
                         </div>
                         <DropdownHeader isHidden={isHidden}>
-                            <span className='w-20'>
-                                {'Tài khoản'}
-                            </span>
                         </DropdownHeader>
                     </div>
                 </div>

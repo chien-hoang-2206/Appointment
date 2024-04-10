@@ -1,6 +1,5 @@
 import AppConfig from "../utils/AppConfig"
 
-const BASE_URL = process.env.REACT_APP_API_URL
 const onRequest = (config) => {
     config.headers.Authorization = `Bearer ${AppConfig.ACCESS_TOKEN}`
     return config
@@ -19,9 +18,7 @@ const onResponseError = async (error) => {
             error.response.status === 401 &&
             error.response.data.message === 'jwt expired'
         ) {
-            try {
-                
-            } catch (_error) {
+            try { } catch (_error) {
                 return Promise.reject(_error)
             }
         }

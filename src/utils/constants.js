@@ -1,5 +1,11 @@
 export default class Constants {
 
+  static optionsStatusBooking = [
+    { label: "Chưa xác nhận", value: 1 },
+    { label: "Đã xác nhận", value: 2 },
+    { label: "Đã khám", value: 3 },
+
+  ]
   static nationVN = [
     { label: "Kinh", value: 1 },
     { label: "Tày", value: 2 },
@@ -62,11 +68,11 @@ export default class Constants {
   static optionSex = [
     {
       label: "Nam",
-      value: 1
+      value: "Male"
     },
     {
       label: "Nữ",
-      value: 2
+      value: "Female"
     },
     {
       label: "Khác",
@@ -77,11 +83,11 @@ export default class Constants {
   static optionStatusAccount = [
     {
       label: "Đang hoạt động",
-      value: 1
+      value: 10
     },
     {
       label: "Khóa tài khoản",
-      value: 2,
+      value: 20,
     }
   ];
   static labelStatus = [

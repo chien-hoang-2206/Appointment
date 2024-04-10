@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+/* button, [type='button']{
+    background-color: #1fb6ff;
+    border
+    color: #fff;
+} */

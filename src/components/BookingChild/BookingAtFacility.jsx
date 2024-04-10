@@ -3,19 +3,33 @@ import InputSearch from "../Input/InputSearch";
 import CardCustom from "../Card/CardCustom";
 import ButonBooking from "../Button/ButonBooking";
 import ButonOutLine from "../Button/ButonOutLine";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BG1 from '../../assets/images/bg-book.png'
 import IcLocation from '../../assets/icon/ic-location.svg'
+import Factories from "../../services/FactoryApi";
+import { ToastNotiError } from "../../utils/Utils";
 
 const BookingAtFacility = (props) => {
     const { type, onChangeFacility } = props
     const [page, setPage] = useState(0);
+    const [listData, setListData] = useState([]);
 
+    const fetchData = async (keyword) => {
+        try {
+            const response = await Factories.getBranchList(keyword);
+            setListData(response);
+        } catch (error) {
+            ToastNotiError(error);
+        }
+    };
+    useEffect(() => {
+        fetchData();
+    }, []);
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
     const handleClickFacility = (id) => {
-        onChangeFacility(1)
+        onChangeFacility(id)
     };
     return (
         <div className="flex flex-col w-full bg-blue3 ">
@@ -35,81 +49,30 @@ const BookingAtFacility = (props) => {
             <div className="flex flex-col justify-center items-center mt-14">
                 <InputSearch />
                 <div className="max-w-[95%] 2xl:max-w-[70%]  grid grid-cols-1 xl:grid-cols-2 gap-4 py-12 sm:w-full  rounded-2xl ">
-                    <CardCustom
-                        title='Bệnh viện Đại học Y Dược TP.HCM'
-                        src="https://api.dicebear.com/7.x/miniavs/svg?seed=2"
-                        content={
-                            <span className="flex flex-row gap-1 justify-start items-start">
-                                <img src={IcLocation} className="mt-1" />
-                                {`Cơ sở 201 Nguyễn Chí Thanh, Phường 12, Quận 5, TP. Hồ Chí Minh`}</span>
-                        }
-                        footer={
-                            <div className="flex mt-4 flex-row justify-center gap-2 items-center">
-                                <ButonBooking onClick={() => handleClickFacility()} />
-                                <ButonOutLine> Xem chi tiết</ButonOutLine>
-                            </div>
-                        }
-                    />
-                    <CardCustom
-                        title='Bệnh viện Đại học Y Dược TP.HCM'
-                        src="https://api.dicebear.com/7.x/miniavs/svg?seed=2"
-                        content={
-                            <span className="flex flex-row gap-1 justify-start items-start">
-                                <img src={IcLocation} className="mt-1" />
-                                {`Cơ sở 201 Nguyễn Chí Thanh, Phường 12, Quận 5, TP. Hồ Chí Minh`}</span>
-                        }
-                        footer={
-                            <div className="flex mt-4 flex-row justify-center gap-2 items-center">
-                                <ButonBooking />
-                                <ButonOutLine> Xem chi tiết</ButonOutLine>
-                            </div>
-                        }
-                    />
-                    <CardCustom
-                        title='Bệnh viện Đại học Y Dược TP.HCM'
-                        src="https://api.dicebear.com/7.x/miniavs/svg?seed=2"
-                        content={
-                            <span className="flex flex-row gap-1 justify-start items-start">
-                                <img src={IcLocation} className="mt-1" />
-                                {`Cơ sở 201 Nguyễn Chí Thanh, Phường 12, Quận 5, TP. Hồ Chí Minh`}</span>
-                        }
-                        footer={
-                            <div className="flex mt-4 flex-row justify-center gap-2 items-center">
-                                <ButonBooking />
-                                <ButonOutLine> Xem chi tiết</ButonOutLine>
-                            </div>
-                        }
-                    />
-                    <CardCustom
-                        title='Bệnh viện Đại học Y Dược TP.HCM'
-                        src="https://api.dicebear.com/7.x/miniavs/svg?seed=2"
-                        content={
-                            <span className="flex flex-row gap-1 justify-start items-start">
-                                <img src={IcLocation} className="mt-1" />
-                                {`Cơ sở 201 Nguyễn Chí Thanh, Phường 12, Quận 5, TP. Hồ Chí Minh`}</span>
-                        }
-                        footer={
-                            <div className="flex mt-4 flex-row justify-center gap-2 items-center">
-                                <ButonBooking />
-                                <ButonOutLine> Xem chi tiết</ButonOutLine>
-                            </div>
-                        }
-                    />
-                    <CardCustom
-                        title='Bệnh viện Đại học Y Dược TP.HCM'
-                        src="https://api.dicebear.com/7.x/miniavs/svg?seed=2"
-                        content={
-                            <span className="flex flex-row gap-1 justify-start items-start">
-                                <img src={IcLocation} className="mt-1" />
-                                {`Cơ sở 201 Nguyễn Chí Thanh, Phường 12, Quận 5, TP. Hồ Chí Minh`}</span>
-                        }
-                        footer={
-                            <div className="flex mt-4 flex-row justify-center gap-2 items-center">
-                                <ButonBooking />
-                                <ButonOutLine> Xem chi tiết</ButonOutLine>
-                            </div>
-                        }
-                    />
+
+                    {listData?.map(item => (
+                        <>
+                            <CardCustom
+                                title={item?.name}
+                                src="https://api.dicebear.com/7.x/miniavs/svg?seed=2"
+                                content={
+                                    <span className="flex flex-row gap-1 justify-start items-start">
+                                        <img src={IcLocation} className="mt-1" />
+                                        {item?.address}
+                                    </span>
+                                }
+                                footer={
+                                    <div className="flex mt-4 flex-row justify-center gap-2 items-center">
+                                        <ButonBooking
+                                            onClick={() => handleClickFacility(item?._id)}
+                                        />
+                                        {/* <ButonOutLine> Xem chi tiết</ButonOutLine> */}
+                                    </div>
+                                }
+                            />
+                        </>
+                    ))}
+
                 </div>
                 <Pagination className="pb-8" count={10} component="div" onChange={(e, page) => handleChangePage(e, page)} showFirstButton showLastButton />
             </div>

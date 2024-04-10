@@ -132,7 +132,7 @@ const ChooseService = props => {
                                 <Button
                                     startIcon={<ArrowBackIosNewIcon />}
                                     onClick={goBack}
-                                    className='w-28' href="#text-buttons" onClick={() => goBack()}>Quay lại</Button>
+                                    className='w-28' href="#text-buttons">Quay lại</Button>
 
                             </div>
                         }

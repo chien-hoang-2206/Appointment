@@ -34,7 +34,6 @@ const getListData = (value) => {
                 {
                     type: 'error',
                     start: '12:00',
-                    start: '12:00',
                     content: '12:00 -15:00',
                 },
             ];
@@ -196,7 +195,7 @@ const ChooseDate = props => {
                                 <Button
                                     startIcon={<ArrowBackIosNewIcon />}
                                     onClick={goBack}
-                                    className='w-28' href="#text-buttons" onClick={() => goBack()}>
+                                    className='w-28' href="#text-buttons" >
                                     Quay lại
                                 </Button>
                             </div>

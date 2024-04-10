@@ -5,6 +5,7 @@ import ICNT from '../../assets/icon/ic-noti.svg'
 import { useLocation } from 'react-router-dom';
 import Record from '../../components/ProfileChild/Record/Record';
 import Bill from '../../components/ProfileChild/Record/Bill/Bill';
+import Notification from '../../components/ProfileChild/Record/Notification';
 const Profile = () => {
     const location = useLocation();
     const queryParameters = new URLSearchParams(location.search);
@@ -38,7 +39,7 @@ const Profile = () => {
             <div className='px-6 border-l border-l-gray-light flex justify-start flex-col'>
                 {type === 'records' && <Record value={0} onClickBox={() => { }} />}
                 {type === 'appointment' && <Bill />}
-                {type === 'notifications' && <Record />}
+                {type === 'notifications' && <Notification />}
             </div>
         </div>
     );

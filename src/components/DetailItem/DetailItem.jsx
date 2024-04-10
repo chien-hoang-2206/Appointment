@@ -4,8 +4,8 @@ const DetailItem = (props) => {
     return (
         <div className="inline-flex items-center gap-2 justify-start font-sans font-semibold tracking-wide text-white bg-blue-500 rounded-lg min-h-[26px]">
             <span>
-                {icon && <img className='w-4' src={icon} /> }
-                
+                {icon && <img className='w-4' src={icon} />}
+
                 {/* <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="w-6 h-6"
@@ -21,7 +21,7 @@ const DetailItem = (props) => {
                         />
                     </svg> */}
             </span>
-            <span className={`w-[150px] ${styleTitle}`}>{title}:</span>
+            <span className={`w-[160px] ${styleTitle}`}>{title}:</span>
             <span className="max-w-[75%] text-ellipsis text-gray-dark font-bold">{content ? content : ''}</span>
         </div>
     );

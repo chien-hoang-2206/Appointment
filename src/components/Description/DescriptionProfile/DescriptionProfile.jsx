@@ -7,15 +7,16 @@ import IC5 from '../../../assets/icon/ic-location.svg'
 import IC6 from '../../../assets/icon/ic-nation.svg'
 import { Avatar } from 'antd';
 import Constants from '../../../utils/constants';
+import { getDate } from '../../../utils/Utils';
 const DescriptionProfile = (props) => {
     return (
         <div className="flex flex-col">
             <div className="flex  flex-row justify-between">
                 <div className="flex flex-col w-[80%]">
-                    <DetailItem icon={IC1} title='Họ và tên' content={props?.data?.name} />
-                    <DetailItem icon={IC2} title='Ngày sinh' content={props?.data?.date} />
+                    <DetailItem icon={IC1} title='Họ và tên' content={props?.data?.fullName} />
+                    <DetailItem icon={IC2} title='Ngày sinh' content={getDate(props?.data?.dateOfBirth)} />
                     <DetailItem icon={IC3} title='Số điện thoại' content={props?.data?.phone} />
-                    <DetailItem icon={IC4} title='Giới tính' content={Constants.optionSex?.find(item => item.value === parseInt(props?.data?.gender))?.label} />
+                    <DetailItem icon={IC4} title='Giới tính' content={Constants.optionSex?.find(item => item.value === props?.data?.gender)?.label} />
                 </div>
                 <div className="flex  justify-center items-start w-[20%]">
                     <Avatar

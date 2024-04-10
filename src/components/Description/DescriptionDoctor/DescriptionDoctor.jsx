@@ -16,8 +16,7 @@ const DescriptionDoctor = (props) => {
                 <div className="flex flex-col gap-2 w-[80%]">
                     <DetailItem icon={IC1}
                         styleTitle={'w-[400px]'}
-                        title={<span className='text-yellow w-full ' > BS CKLL. Âu Thanh Dương</span>}
-                        content={props?.data?.name}
+                        title={<span className='text-yellow w-full ' >{props?.data?.fullName }</span>}
                     />
                     <DetailItem icon={IC6} title='Giới tính' content={Constants.optionSex?.find(item => item.value === parseInt(props?.data?.gender))?.label} />
                     <DetailItem icon={IC7} title='Chuyên khoa' content={props?.data?.speciality} />
