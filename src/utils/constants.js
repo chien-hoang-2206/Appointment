@@ -4,7 +4,19 @@ export default class Constants {
     { label: "Chưa xác nhận", value: 1 },
     { label: "Đã xác nhận", value: 2 },
     { label: "Đã khám", value: 3 },
-
+    { label: "BS Đã đánh giá", value: 4 },
+    // { label: "BN Đã đánh giá", value: 5 },
+  ]
+  static optionServices = [
+    { label: "Khám trong giờ", value: 1 },
+    { label: "Khám ngoài giờ", value: 2 },
+    { label: "Khám online", value: 3 },
+  ]
+  static optionStatusCl = [
+    { label: "Đang chờ duyệt", value: 1, color: '#41B06E' },
+    { label: "Bị từ chối", value: 2, color: '#e74c3c' },
+    { label: "Đã được duyệt", value: 3, color: '#00b5f1' },
+    { label: "Đã đặt lich", value: 4, color: '#edf03c' },
   ]
   static nationVN = [
     { label: "Kinh", value: 1 },
@@ -64,6 +76,14 @@ export default class Constants {
     { label: "Người nước ngoài", value: 55 }
   ];
 
+  static levelDoctor = [
+    { label: "Bác sĩ thực tập", value: 1 },
+    { label: "Bác sĩ cơ sở", value: 2 },
+    { label: "Bác sĩ chuyên khoa", value: 3 },
+    { label: "Bác sĩ chính thức", value: 4 },
+    { label: "Giáo sư", value: 5 },
+    { label: "Bác sĩ phụ trách", value: 6 }
+  ]
 
   static optionSex = [
     {
@@ -76,7 +96,7 @@ export default class Constants {
     },
     {
       label: "Khác",
-      value: 3
+      value: 'Other'
     },
   ];
 
@@ -93,28 +113,39 @@ export default class Constants {
   static labelStatus = [
     {
       label: "Chờ xác nhận",
-      value: 10,
-      status: 'default'
+      value: 1,
+      status: 'warning'
     },
     {
       label: "Đã xác nhận",
-      value: 20,
-      status: 'warning'
+      value: 2,
+      status: 'processing'
     }
     ,
     {
       label: "Bị huỷ lịch",
-      value: 30,
+      value: 3,
       status: 'error'
     },
     {
       label: "Đã hoàn thành",
-      value: 40,
+      value: 4,
       status: 'success'
     }
   ];
 
-
+  static labelStatusQuestion = [
+    {
+      label: "Chưa trả lời",
+      value: 1,
+      status: 'warning'
+    },
+    {
+      label: "Đã trả lời",
+      value: 2,
+      status: 'processing'
+    }
+  ];
   static vietnamProvinces = [
     { label: "Hà Nội", value: 1 },
     { label: "Hà Giang", value: 2 },

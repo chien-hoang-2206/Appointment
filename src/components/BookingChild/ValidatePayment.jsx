@@ -8,16 +8,21 @@ import IC6 from '../../assets/icon/ic-wallet.svg'
 import IC7 from '../../assets/icon/ic-money.svg'
 import { Button } from '@mui/material';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import Constants from '../../utils/constants';
+import { convertStringToNumber, getDate } from '../../utils/Utils';
 
 const DescriptionPayment = props => {
-    const { onClickPayment, goBack } = props
+    const { data, onClickPayment, goBack } = props
+    const shiftInfo = data.Shift
+    const doctorInfo = data.Doctor
+    const patientInfo = data.Profile
     return (
         <>
             <div className="w-full flex flex-col gap-4">
                 <div className="w-full flex flex-row gap-2 justify-between items-start">
                     <div className="flex  w-1/2 flex-col gap-2 justify-start items-start">
                         <div className='flex row gap-2'>
-                            <input type='radio' checked={true} />
+                            <input type='radio' checked={true} onChange={() => { }} />
                             <span className="text-base">
                                 Thanh toán tại bệnh viện
                             </span>
@@ -36,10 +41,19 @@ const DescriptionPayment = props => {
                                     <div className="flex flex-row gap-4">
                                         <img src={IC1} />
                                         <span className='font-bold'>
+                                            Bênh viện
+                                        </span>
+                                    </div>
+                                    <span className='text-base'>{data?.Branch.name}</span>
+                                </div>
+                                <div className='w-full flex flex-row justify-between items-center  border-b-gray-light pb-1 border-b border-b-gray-light pb-1 border-b'>
+                                    <div className="flex flex-row gap-4">
+                                        <img src={IC1} />
+                                        <span className='font-bold'>
                                             Chuyên khoa
                                         </span>
                                     </div>
-                                    <span className='text-base'>Phổi</span>
+                                    <span className='text-base'>{shiftInfo?.departmentName} </span>
                                 </div>
                                 <div className='w-full flex flex-row justify-between items-center  border-b-gray-light pb-1 border-b'>
                                     <div className="flex flex-row gap-4">
@@ -48,7 +62,7 @@ const DescriptionPayment = props => {
                                             Bác sĩ
                                         </span>
                                     </div>
-                                    <span className='text-base'>Âu Thanh Tùng</span>
+                                    <span className='text-base'>{doctorInfo?.fullName}</span>
                                 </div>
                                 <div className='w-full flex flex-row justify-between items-center  border-b-gray-light pb-1 border-b'>
                                     <div className="flex flex-row gap-4">
@@ -57,7 +71,7 @@ const DescriptionPayment = props => {
                                             Dịch vụ
                                         </span>
                                     </div>
-                                    <span className='text-base'>Khám dịch vụ</span>
+                                    <span className='text-base'>{Constants.optionServices.find(item => item.value === parseInt(shiftInfo?.service))?.label}</span>
                                 </div>
                                 <div className='w-full flex flex-row justify-between items-center  border-b-gray-light pb-1 border-b'>
                                     <div className="flex flex-row gap-4">
@@ -66,7 +80,7 @@ const DescriptionPayment = props => {
                                             Ngày khám
                                         </span>
                                     </div>
-                                    <span className='text-base'>15/03/2024</span>
+                                    <span className='text-base'>{`${getDate(shiftInfo.timeStart)}  `} </span>
                                 </div>
 
                                 <div className='w-full flex flex-row justify-between items-center  border-b-gray-light pb-1 border-b'>
@@ -76,7 +90,7 @@ const DescriptionPayment = props => {
                                             Giờ Khám
                                         </span>
                                     </div>
-                                    <span className='text-base'>13:30 - 14:30</span>
+                                    <span className='text-base'>{`${getDate(shiftInfo.timeStart, 6)} - ${getDate(shiftInfo.timeEnd, 6)}`} </span>
                                 </div>
                                 <div className='w-full flex flex-row justify-between items-center'>
                                     <div className="flex flex-row gap-4">
@@ -85,36 +99,37 @@ const DescriptionPayment = props => {
                                             Tiền khám
                                         </span>
                                     </div>
-                                    <span className='text-base text-blue2 font-bold'>150.000 VNĐ</span>
+                                    <span className='text-base text-blue2 font-bold'>{convertStringToNumber(shiftInfo?.price)}</span>
                                 </div>
 
                             </div>
                         </div>
-                        <div className="flex border-t border-t-gray-light w-full">
+
+                        {/* <div className="flex border-t border-t-gray-light w-full">
                             <div className=" w-full flex flex-col gap-3">
                                 <div className="flex flex-row justify-between items-center w-full">
                                     <span className="font-bold">Phí tiện ích + Phí TGTT : </span>
                                     <span className="font-bold">0 VND </span>
                                 </div>
                             </div>
-                        </div>
-                        <div className="text-xl w-full flex flex-col gap-3">
+                        </div> */}
+                        {/* <div className="text-xl w-full flex flex-col gap-3">
                             <div className="flex flex-row justify-between items-center w-full">
                                 <span className="font-bold">Tổng cộng: </span>
                                 <span className="font-bold text-blue">150.000 VND </span>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
                 <div className="flex flex-row justify-between">
                     <Button
                         startIcon={<ArrowBackIosNewIcon />}
-                        className='w-28' href="#text-buttons" o
-                        nClick={() => goBack()}
+                        className='w-28'
+                        onClick={goBack}
                     >Quay lại</Button>
                     <Button
                         variant="contained"
-                        className='w-36' href="#text-buttons"
+                        className='w-36'
                         onClick={() => onClickPayment()}
                     >
                         Xác nhận</Button>
@@ -125,8 +140,8 @@ const DescriptionPayment = props => {
 }
 
 const ValidatePayment = (props) => {
+    const { data, goBack } = props
     function onClickSubmit() {
-        console.log('ssssss');
         props.onClickSubmit()
     }
     return (
@@ -134,7 +149,7 @@ const ValidatePayment = (props) => {
             <div className='flex flex-col w-[80%] xl:w-[70%] xl:flex-row justify-center gap-4 '>
                 <BoxCustom
                     title={'Chọn phương thức thanh toán'}
-                    description={<DescriptionPayment goBack={props.goBack} onClickPayment={onClickSubmit} />}
+                    description={<DescriptionPayment data={data} goBack={goBack} onClickPayment={onClickSubmit} />}
                 />
             </div>
         </div>

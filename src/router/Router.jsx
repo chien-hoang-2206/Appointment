@@ -9,13 +9,15 @@ import NotFound from "../pages/NotFound/NotFound";
 import HomePage from "../pages/Home/HomePage";
 import Profile from "../pages/Profile/Proflie";
 import AppointmentsPage from "../pages/AppointmentsPage/AppointmentsPage";
-import UpdateProfilePage from "../pages/UpdateProfile/UpdateProfile";
+import UpdateProfilePatient from "../pages/UpdateProfile/UpdateProfile";
 import QuestionPage from "../pages/QuestionPage/QuestionPage";
 import DoctorPage from "../pages/DoctorPage/DoctorPage";
 import BookingPage from "../pages/Booking/BookingPage";
 import CreateQuestionPage from "../pages/QuestionPage/CreateQuestionPage";
 import HomeAdmin from "../pages/Admin/HomeAdmin";
 import CreateProfilePage from "../pages/CreateProfile/CreateProfile";
+import DoctorDetailPage from "../pages/DoctorDetail/DoctorDetailPage";
+import PatientDetailPage from "../pages/PatientDetail/PatientDetailPage";
 
 
 const Router = () => {
@@ -42,6 +44,18 @@ const Router = () => {
             </Layout>}
         />
         <Route
+          path="/patient/:id" element={
+            <Layout>
+              <PatientDetailPage />
+            </Layout>}
+        />
+        <Route
+          path="/doctor/:id" element={
+            <Layout>
+              <DoctorDetailPage />
+            </Layout>}
+        />
+        <Route
           path="/appointments/:id" element={
             <Layout>
               <AppointmentsPage />
@@ -56,11 +70,11 @@ const Router = () => {
         <Route
           path="/update-profile/:id" element={
             <Layout>
-              <UpdateProfilePage />
+              <UpdateProfilePatient />
             </Layout>}
         />
         <Route
-          path="/question" element={
+          path="/question/:type" element={
             <Layout>
               <QuestionPage />
             </Layout>}

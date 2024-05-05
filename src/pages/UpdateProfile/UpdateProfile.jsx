@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import Box from "../../components/Box/Box";
-import UpdateProfile from "../../components/Description/UpdateProfile/DescriptionBill";
+import UpdateProfilePatient from "../../components/Description/UpdateProfile/UpdateProfilePatient";
 import { useEffect, useState } from "react";
 import Factories from "../../services/FactoryApi";
 import { ToastNotiError } from "../../utils/Utils";
@@ -33,7 +33,7 @@ const UpdateProfilePage = () => {
                 <Box
                     title={<span className="text-2xl">Cập nhật thông tin bệnh nhân</span>}
                     alignTitle='center'
-                    description={<UpdateProfile data={data} />}
+                    description={<UpdateProfilePatient data={data} />}
                 />
             </div>
         </div>

@@ -2,23 +2,7 @@ import ApiConstants from "../adapter/ApiConstants";
 import ApiOperation from "../adapter/ApiOperation";
 
 const BookingFactories = {
-  getListBooking: async (name,dateCreate,dateBooking) => {
-    let params = {};
-    if (name){
-      params.Keyword = name;
-    }
-    if (dateCreate){
-      params.DateCreate = dateCreate;
-    }
-    if (dateBooking){
-      params.DateBooking = dateBooking;
-    }
-    return ApiOperation.request({
-      url: `${ApiConstants.BOOKING}`,
-      method: "GET",
-      params: params
-    });
-  },
+  
   getListBookingForUser: async id => {
     return ApiOperation.request({
       url: `${ApiConstants.BOOKING_USER}/${id}`,
@@ -45,9 +29,9 @@ const BookingFactories = {
       data: data,
     });
   },
-  updateBooking: async (id,type,rate,comment,pgt_id,amount,userName) => {
-    const data ={
-      rate : rate,
+  updateBooking: async (id, type, rate, comment, pgt_id, amount, userName) => {
+    const data = {
+      rate: rate,
       comment: comment,
       pgt_id: pgt_id,
       amount: amount,
@@ -75,40 +59,40 @@ const BookingFactories = {
       method: "GET",
     });
   },
-  getBookingChart: async (year,month,date) => {
+  getBookingChart: async (year, month, date) => {
     let params = {
     };
-    if (year){
-      params.Year= year;
+    if (year) {
+      params.Year = year;
     }
-    if (month){
-      params.Month= month;
+    if (month) {
+      params.Month = month;
     }
-    if (date){
-      params.Date= date;
+    if (date) {
+      params.Date = date;
     }
     return ApiOperation.request({
       url: `${ApiConstants.BOOKING_CHART}`,
       method: "GET",
-      params: params , 
+      params: params,
     });
   },
-  getBookingTopPgt: async (year,month,date) => {
+  getBookingTopPgt: async (year, month, date) => {
     let params = {
     };
-    if (year){
-      params.Year= year;
+    if (year) {
+      params.Year = year;
     }
-    if (month){
-      params.Month= month;
+    if (month) {
+      params.Month = month;
     }
-    if (date){
-      params.Date= date;
+    if (date) {
+      params.Date = date;
     }
     return ApiOperation.request({
       url: `${ApiConstants.BOOKING_TOP}`,
       method: "GET",
-      params: params , 
+      params: params,
     });
   },
 };

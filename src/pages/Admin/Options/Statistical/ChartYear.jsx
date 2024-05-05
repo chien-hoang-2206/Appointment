@@ -4,25 +4,25 @@ import { Chart, registerables } from 'chart.js';
 import BookingFactories from '../../../../services/BookingFactories';
 import { ToastNotiError } from '../../../../utils/Utils';
 import { Spin } from 'antd';
+import Factories from '../../../../services/FactoryApi';
 Chart.register(...registerables);
 
 const ChartYear = (props) => {
-    const { year, month } = props;
+    const { year = 2024, month = 5, Status = 4 } = props;
     const [barData1, setBarData1] = useState();
     const [barData2, setBarData2] = useState();
     const [barData3, setBarData3] = useState();
     const [loading, setLoading] = useState(true);
     const fetchDataYear = async (year, month) => {
         try {
-            // const response = await BookingFactories.getBookingChart(year, month);
-            let response = {}
-            if (response?.status === 200) {
-                const responseData = response?.data
+            const response = await Factories.getBookingChart(year, month, Status);
+            if (response) {
+                const responseData = response
                 let labels;
                 if (month) {
-                    labels = responseData.map(item => `Ngày ${item.day}`);
+                    labels = responseData?.map(item => `Ngày ${item.date}`);
                 } else {
-                    labels = responseData.map(item => `Tháng ${item.month}`);
+                    labels = responseData?.map(item => `Tháng ${item.month}`);
                 }
                 const bookingData = responseData.map(item => parseInt(item.bookings, 10));
                 const totalPriceData = responseData.map(item => parseInt(item.total_price, 10));
@@ -30,7 +30,7 @@ const ChartYear = (props) => {
                     labels: labels,
                     datasets: [
                         {
-                            label: "Số lần được booking",
+                            label: "Số lượt khám",
                             backgroundColor: "rgb(54, 162, 235)",
                             data: bookingData
                         },
@@ -56,17 +56,16 @@ const ChartYear = (props) => {
 
     const fetchDataTop = async (year, month) => {
         try {
-            // const response = await BookingFactories.getBookingTopPgt(year, month);
-            const response = {}
-            if (response?.status === 200) {
-                const responseData = response?.data
+            const response = await Factories.getBookingTopDT(year, month);
+            if (response) {
+                const responseData = response
                 const labels = responseData.map(item => `${item.user_name}`);
                 const totalTime = responseData.map(item => parseInt(item.total_duration_minutes, 10));
                 const barData3 = {
                     labels: labels,
                     datasets: [
                         {
-                            label: "Top PGT Có số giờ booking cao nhất",
+                            label: "Top Bác sĩ Có số giờ khám cao nhất",
                             backgroundColor: "rgb(75, 192, 192)", // Teal
                             data: totalTime
                         }
@@ -83,8 +82,9 @@ const ChartYear = (props) => {
     useEffect(() => {
         setLoading(true);
         fetchDataYear(year, month);
-        fetchDataTop(year, month);
-    }, [year, month]);
+        setLoading(false);
+        // fetchDataTop(year);
+    }, [year, month, Status]);
 
     const options1 = {
         scales: {

@@ -1,27 +1,35 @@
-import React, { useEffect, useState } from "react";
-import { Table, Input, Select, DatePicker, Space, Button, Modal } from "antd";
+import { useEffect, useState } from "react";
+import { Table, Input, Select, DatePicker, Space } from "antd";
 import "./Booking.scss";
 import Constants from "../../../../utils/constants";
 import BookingFactories from "../../../../services/BookingFactories";
-import { ToastNoti, ToastNotiError, convertStringToNumber, getDate, getTime } from "../../../../utils/Utils";
-import Temp from "../../../../utils/temp";
+import { ToastNoti, ToastNotiError, convertStringToNumber, getDate, } from "../../../../utils/Utils";
+import { Link } from "react-router-dom";
+import Factories from "../../../../services/FactoryApi";
+import { Button } from "@mui/material";
 
 const Booking = () => {
   const [bookingList, setBookingList] = useState([]);
-  console.log("🚀 ~ Booking ~ bookingList:", bookingList)
-  const [namePgt, setNamePgt] = useState("");
+  const [keyword, setKeyword] = useState("");
   const [dateCreate, setDateCreate] = useState();
   const [DateBooking, setDateBooking] = useState();
+  const [loading, setLoading] = useState();
 
   const fetchDataBookingList = async (name, dateCreate, dateBooking) => {
     try {
-      const response = {
-        data: Temp.bookingRequest
+      setLoading(true)
+      const data = {
+        keyword: name,
+        dateCreate: dateCreate,
+        dateBooking: dateBooking,
       }
-      // await BookingFactories.getListBooking(name,dateCreate,dateBooking);
-      setBookingList(response?.data);
+      const resp = await Factories.getListBooking(data);
+      setLoading(false)
+      setBookingList(resp);
     } catch (error) {
       ToastNotiError();
+      setLoading(true)
+
     }
   };
 
@@ -29,20 +37,21 @@ const Booking = () => {
     fetchDataBookingList();
   }, []);
 
+
   const handleKeyDown = (event) => {
     if (event.key === "Enter" || event.keyCode === 13) {
-      fetchDataBookingList(namePgt);
+      fetchDataBookingList(keyword);
     }
   };
 
   function handleReset() {
-    setNamePgt("");
+    setKeyword("");
     setDateCreate();
     setDateBooking();
     fetchDataBookingList()
   }
   function handleSearch() {
-    fetchDataBookingList(namePgt, dateCreate?.$d, DateBooking?.$d)
+    fetchDataBookingList(keyword, dateCreate?.$d, DateBooking?.$d)
   }
 
   const columns = [
@@ -51,14 +60,16 @@ const Booking = () => {
       dataIndex: 'id',
       key: 'id',
       width: 50,
+      fixed: 'left',
       align: 'center',
       render: (id, record, index) => { ++index; return index; },
       showSorterTooltip: false,
     },
     {
       title: "Tài khoản",
-      width: 100,
-      dataIndex: "phone",
+      width: 120,
+      fixed: 'left',
+      dataIndex: "phoneUser",
       render: (text) => (
         <div className="text-data">
           {text}
@@ -67,11 +78,11 @@ const Booking = () => {
     },
     {
       title: "Bệnh nhân",
-      width: 100,
+      width: 120,
       dataIndex: "username",
-      render: (text) => (
+      render: (text, data) => (
         <div className="text-data">
-          {text}
+          {data?.patientInfo?.fullName}
         </div>
       ),
     },
@@ -80,57 +91,49 @@ const Booking = () => {
       dataIndex: "department",
       width: 240,
       align: 'left',
-      render: (text) => <div className="text-data">{text}</div>,
+      render: (text, data) => <div className="text-data">{data?.shiftInfo?.departmentName}</div>,
     },
     {
       title: "Tên bác sĩ",
       dataIndex: "doctor",
       width: 200,
       align: 'left',
-      render: (text) => <div className="text-data">{text}</div>,
+      render: (text, data) => <div className="text-data">{data?.doctorInfo?.fullName}</div>,
     },
     {
       title: "Ngày tạo",
       dataIndex: "createAt",
-      key: "createAt",
-      width: 160,
-      render: (text, data) => <div>{getDate(data?.createAt, 1)}</div>,
+      key: "created_at",
+      width: 120,
+      render: (text, data) => <div>{getDate(data?.created_at, 1)}</div>,
     },
     {
       title: "Ngày khám",
       key: "date",
       dataIndex: "date",
       align: "left",
-      width: 200,
-      render: (text, data) => <div>{getDate(data?.createAt, 1)}</div>,
+      width: 120,
+      render: (text, data) => <div>{getDate(data?.shiftInfo?.date, 1)}</div>,
     },
     {
       title: "Thời gian",
       key: "time_from",
       dataIndex: "time_from",
       align: "left",
-      width: 200,
-      render: (text, data) => <div>
-        <span
-          style={{ width: 160 }}>
-          {(data?.timestamp)}
-        </span>
-        {/* -  */}
-        {/* {getTime(data.time_to)
-        } */}
-      </div>,
+      width: 160,
+      render: (text, data) => <span>{`${getDate(data?.shiftInfo?.timeStart, 6)} - ${getDate(data?.shiftInfo?.timeEnd, 6)}`}</span>,
     },
     {
       title: "Tình trạng",
       key: "status",
       align: "left",
-      width: 250,
+      width: 180,
       filters: Constants.optionsFilterStatusBooking,
       onFilter: (value, record) => record.status === value,
       render: (value, data) => (
         <Select
           style={{ width: '100%' }}
-          onChange={(e) => handleChangeStatusBooking(data?.id, e)}
+          onChange={(e) => handleChangeStatusBooking(data?._id, e)}
           options={Constants.optionsStatusBooking} value={data?.status}
         />
       )
@@ -140,38 +143,29 @@ const Booking = () => {
       dataIndex: "money",
       key: "price",
       align: 'right',
-      width: 200,
-      render: (text) => <div className="text-data">{convertStringToNumber(text)}</div>,
+      width: 130,
+      render: (text, data) => <div className="text-data">{convertStringToNumber(data?.shiftInfo?.price)}</div>,
     },
     {
       title: "Tác vụ",
       key: "action",
-      width: 90,
+      width: 190,
       align: 'center',
       render: (_, record) =>
         <Space size="middle">
-          <Button onClick={(e) => showModal(record?.id)} size='small' type="primary" danger>
-            Xóa
-          </Button>
+          <Link to={`/appointments/${record?._id}?v=2`} target="_blank">
+            <Button onClick={() => { }} size='small' type="primary" >
+              Xem chi tiết
+            </Button>
+          </Link>
         </Space>
     },
   ];
 
-  const [open, setOpen] = useState(false);
-  const [deleteId, setDeleteId] = useState(false);
-  const showModal = (id) => {
-    setDeleteId(id)
-    setOpen(true);
-  };
-  const hideModal = () => {
-    setDeleteId();
-    setOpen(false);
-  };
-
   const fetchDataUpdateBooking = async (id, type) => {
     try {
-      const response = await BookingFactories.updateBooking(id, type);
-      if (response?.status === 200) {
+      const response = await Factories.updateAppointment(id, type);
+      if (response?._id) {
         ToastNoti()
         fetchDataBookingList();
       }
@@ -180,22 +174,7 @@ const Booking = () => {
     }
   };
 
-  async function handleClickDelete() {
-    try {
-      const response = await BookingFactories.deleteBookingId(deleteId);
-      if (response?.status === 200) {
-        ToastNoti()
-        fetchDataBookingList();
-        hideModal();
-      }
-    } catch (error) {
-      hideModal();
-      ToastNotiError()
-    }
-  }
-
   function handleChangeStatusBooking(id, value) {
-    console.log(id);
     fetchDataUpdateBooking(id, value)
   }
 
@@ -208,71 +187,57 @@ const Booking = () => {
   };
 
   const handleOnChangeInput = (e) => {
-    setNamePgt(e.target.value);
+    setKeyword(e.target.value);
   };
 
   return (
     <div className="booking-container" style={{ height: '100vh', overflow: 'scroll' }}>
       <div className="booking-title"><span>Danh sách lịch khám</span></div>
-      <div className="booking-search">
+      <div className="booking-search flex flex-row justify-between">
         <Input
           placeholder="Tìm kiếm tên bệnh nhân, bác sĩ ..."
           size="middle "
-          value={namePgt}
+          value={keyword}
           onKeyDown={(e) => handleKeyDown(e)}
           onChange={(e) => handleOnChangeInput(e)} />
-        <DatePicker
-          placeholder='Chọn ngày tạo'
-          style={{ minWidth: 180 }}
-          value={dateCreate ?? ''}
-          onChange={(e) => handleOnChangeDateCreate(e)}
-        />
-        <DatePicker
-          style={{ minWidth: 180 }}
-          value={DateBooking ?? ''}
-          onChange={(e) => handleOnChangeDateBooking(e)}
-          placeholder='Chọn ngày khám booking'
-        />
-        <Button
-          variant="outlined"
-          onClick={handleReset}>
-          Mặc định
-        </Button>
-        <Button
-          variant="contained"
-          onClick={handleSearch}>
-          Tìm kiếm
-        </Button>
+
+        <div className="flex flex-row gap-1">
+          <DatePicker
+            placeholder='Chọn ngày tạo'
+            style={{ minWidth: 140 }}
+            value={dateCreate ?? ''}
+            onChange={(e) => handleOnChangeDateCreate(e)}
+          />
+          <DatePicker
+            style={{ minWidth: 120 }}
+            value={DateBooking ?? ''}
+            onChange={(e) => handleOnChangeDateBooking(e)}
+            placeholder='Chọn ngày khám booking'
+          />
+          <Button
+            variant="outlined"
+            style={{ minWidth: 120 }}
+            onClick={handleReset}>
+            Mặc định
+          </Button>
+          <Button
+            variant="contained"
+            style={{ minWidth: 120 }}
+            onClick={handleSearch}>
+            Tìm kiếm
+          </Button>
+        </div>
       </div>
 
-      <Modal
-        title="Xác nhận"
-        open={open}
-        onOk={handleClickDelete}
-        onCancel={hideModal}
-        okText="Xác nhận"
-        cancelText="Hủy bỏ"
-      >
-        Bạn chắc chắn muốn xóa lượt booking này ?
-      </Modal>
 
-      <div className="booking-table  p-4 h-[1200px]">
+      <div className="booking-table  p-4">
         <Table
           columns={columns}
           dataSource={bookingList}
-          // dataSource={booking
-          //   .filter((item) => {
-          //     return monthSelect + statusBooking === ""
-          //       ? item
-          //       : (item.thoigianbook.slice(3, 5) + item.status).includes(
-          //         monthSelect + statusBooking
-          //       );
-          //   })
-          //   .filter((item) => {
-          //     return nameKOL.toLowerCase() === ""
-          //       ? item
-          //       : item.tenKOL.toLowerCase().includes(nameKOL.toLowerCase());
-          //   })}
+          scroll={{
+            x: 1300,
+          }}
+          loading={loading}
           pagination={{
             defaultPageSize: 5,
             showSizeChanger: false,

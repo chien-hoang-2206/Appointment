@@ -54,7 +54,7 @@ export const getProvinces = async () => {
             label: item?.label1,
         }))
 
-        const uniqueProvinces = provinces.filter((province, index, self) =>
+        const uniqueProvinces = provinces?.filter((province, index, self) =>
             index === self.findIndex((p) => (
                 p.value === province.value
             ))

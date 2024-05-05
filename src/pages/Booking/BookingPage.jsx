@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import BookingAtFacility from "../../components/BookingChild/BookingAtFacility";
 import BG1 from '../../assets/images/bg-book.png'
@@ -10,10 +10,14 @@ import ChooseDate from "../../components/BookingChild/ChooseDate";
 import ChooseProfile from "../../components/BookingChild/ChooseProfile";
 import AppointmentInfo from "../../components/AppointmentInfo/AppointmentInfo";
 import ValidatePayment from "../../components/BookingChild/ValidatePayment";
-import { ToastNoti } from "../../utils/Utils";
+import { ToastNoti, ToastNotiError } from "../../utils/Utils";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import Factories from "../../services/FactoryApi";
+import { AuthContext } from "../../context/auth.context";
+import { Breadcrumb } from "antd";
+import { createNotification } from "../../services/FirebaseService";
 
 const BookingPage = () => {
     const location = useLocation();
@@ -21,7 +25,6 @@ const BookingPage = () => {
     const searchParams = new URLSearchParams(location.search);
     // Lấy giá trị của tham số type từ query string
     const type = searchParams.get('type');
-    console.log("🚀 ~ BookingPage ~ type:", type)
     const { handleSubmit, setValue, watch, } = useForm();
     const [typeChoose, setType] = useState()
     const [step, setStep] = useState(1)
@@ -30,6 +33,7 @@ const BookingPage = () => {
     const watcDoctor = watch('Doctor')
     const watchSpecialty = watch('Specialty')
     const watchShift = watch('Shift')
+
     useEffect(() => {
         if (type) {
             setType(type)
@@ -37,6 +41,7 @@ const BookingPage = () => {
             setStep(2)
         }
     }, [type])
+
     function handleChooseType(type) {
         setType(type)
         setValue('Type', type)
@@ -50,16 +55,16 @@ const BookingPage = () => {
         setValue('Doctor', id)
         setStep(step)
     }
-    function handleChangeSpecialty(id, step) {
+    function handleChangeSpecialty(id, step, branch) {
         setValue('Specialty', id)
+        setValue('Branch', branch)
         setStep(step)
     }
     function handleChangeService(id, step) {
         setValue('Service', id)
         setStep(step)
     }
-    function handleChangeDateTime(value, shift) {
-        setValue('Date', value)
+    function handleChangeDateTime(shift) {
         setValue('Shift', shift)
         setStep(7)
     }
@@ -70,17 +75,156 @@ const BookingPage = () => {
     function handleGoback() {
         setStep(step > 1 ? step - 1 : 1)
     }
+
     const navigator = useNavigate()
-    function handleSubmitBooking() {
-        ToastNoti('Đặt lịch khám thành công')
-        // navigator(`/appointments/${}`)
-        navigator(`/appointments/20`)
+    const { user } = useContext(AuthContext);
+    async function handleSubmitBooking() {
+        try {
+            const newData = {
+                user_id: user.id,
+                patientId: watchDataSubmit.Profile._id,
+                shiftId: watchDataSubmit.Shift.id,
+                price: watchDataSubmit.Shift.price,
+            }
+            const response = await Factories.createBooking(newData)
+            if (response?._id) {
+                ToastNoti('Đặt lịch khám thành công')
+                const noti = {
+                    toId: watchDataSubmit.Doctor._id,
+                    type: 1,
+                    action_id: response?._id,
+                }
+                createNotification(noti)
+                navigator(`/appointments/${response?._id}`)
+            }
+        } catch (error) {
+            ToastNotiError()
+        }
     }
-    function onSubmit(data) {
-    }
+
+    function onSubmit() { }
+
+    const handleBreadcrumbClick = (title) => {
+        // Xử lý các trường hợp tùy thuộc vào giá trị của step
+        switch (title) {
+            case 'Home':
+                history.push('/');
+                break;
+            case 'Chọn chuyên khoa':
+                setStep(type == '1' ? 3 : 4);
+                break;
+            case 'Chọn bác sĩ':
+                setStep(type == '1' ? 4 : 3);
+                break;
+            case 'Chọn dịch vụ':
+                setStep(5);
+                break;
+            case 'Chọn thời gian':
+                setStep(6);
+                break;
+            case 'Chọn hồ sơ bệnh nhân':
+                setStep(7);
+                break;
+            case 'Thông tin lượt khám':
+                setStep(8);
+                break;
+            default:
+                break;
+        }
+    };
+
+
+
+    const breadcrumbItems = [
+        {
+            title: 'Home',
+            onClick: () => handleBreadcrumbClick('Home'),
+        },
+        {
+            title: 'Chọn chuyên khoa',
+            onClick: () => handleBreadcrumbClick('Chọn chuyên khoa'),
+            hidden: step < 3, // Ẩn nếu chưa trải qua bước này
+        },
+        {
+            title: 'Chọn bác sĩ',
+            onClick: () => handleBreadcrumbClick('Chọn bác sĩ'),
+            hidden: step < 4, // Ẩn nếu chưa trải qua bước này
+        },
+        {
+            title: 'Chọn dịch vụ',
+            onClick: () => handleBreadcrumbClick('Chọn dịch vụ'),
+            hidden: step < 5, // Ẩn nếu chưa trải qua bước này
+        },
+        {
+            title: 'Chọn thời gian',
+            onClick: () => handleBreadcrumbClick('Chọn thời gian'),
+            hidden: step < 6, // Ẩn nếu chưa trải qua bước này
+        },
+        {
+            title: 'Chọn hồ sơ bệnh nhân',
+            onClick: () => handleBreadcrumbClick('Chọn hồ sơ bệnh nhân'),
+            hidden: step < 7, // Ẩn nếu chưa trải qua bước này
+        },
+        {
+            title: 'Thông tin lượt khám',
+            onClick: () => handleBreadcrumbClick('Thông tin lượt khám'),
+            hidden: step < 8, // Ẩn nếu chưa trải qua bước này
+        },
+    ];
+
+
+    const breadcrumbItemsDoctor = [
+        {
+            title: 'Home',
+            onClick: () => handleBreadcrumbClick('Home'),
+        },
+        {
+            title: 'Chọn bác sĩ',
+            onClick: () => handleBreadcrumbClick('Chọn bác sĩ'),
+            hidden: step < 3, // Ẩn nếu chưa trải qua bước này
+        },
+        {
+            title: 'Chọn chuyên khoa',
+            onClick: () => handleBreadcrumbClick('Chọn chuyên khoa'),
+            hidden: step < 4, // Ẩn nếu chưa trải qua bước này
+        },
+        {
+            title: 'Chọn dịch vụ',
+            onClick: () => handleBreadcrumbClick('Chọn dịch vụ'),
+            hidden: step < 5, // Ẩn nếu chưa trải qua bước này
+        },
+        {
+            title: 'Chọn thời gian',
+            onClick: () => handleBreadcrumbClick('Chọn thời gian'),
+            hidden: step < 6, // Ẩn nếu chưa trải qua bước này
+        },
+        {
+            title: 'Chọn hồ sơ bệnh nhân',
+            onClick: () => handleBreadcrumbClick('Chọn hồ sơ bệnh nhân'),
+            hidden: step < 7, // Ẩn nếu chưa trải qua bước này
+        },
+        {
+            title: 'Thông tin lượt khám',
+            onClick: () => handleBreadcrumbClick('Thông tin lượt khám'),
+            hidden: step < 8, // Ẩn nếu chưa trải qua bước này
+        },
+    ];
+
     return (
         <>
             <form onSubmit={handleSubmit(onSubmit)}>
+                {
+                    step > 2 &&
+                    <div className="flex w-full my-5 px-[20%] 2xl:px-[20%]  justify-start items-center">
+                        {type == '1' ?
+                            <Breadcrumb separator=">" items={breadcrumbItems.filter(item => !item.hidden)} />
+                            :
+                            <Breadcrumb separator=">" items={breadcrumbItemsDoctor.filter(item => !item.hidden)} />
+                        }
+                    </div>
+                }
+
+
                 {step === 1 &&
                     <div className="w-full flex flex-col justify-center items-center" style={{ background: `url(${BG1})`, backgroundSize: 'cover' }}>
                         <div className="w-[1000px] py-32 flex flex-col justify-center items-center">
@@ -138,6 +282,7 @@ const BookingPage = () => {
                 }
                 <div className="flex w-full">
                     <div className="flex w-full justify-center items-center">
+
                         {step === 2 &&
                             <BookingAtFacility type={typeChoose} onChangeFacility={(id) => handleChangeFacility(id)} />
                         }
@@ -145,13 +290,15 @@ const BookingPage = () => {
                             <ChooseSpecialty
                                 value={watchFacility}
                                 goBack={handleGoback}
-                                onChangeSpecialty={(id) => handleChangeSpecialty(id, 4)}
+                                onChangeSpecialty={(id, branch) => handleChangeSpecialty(id, 4, branch)}
                             />
                         }
+
                         {watchFacility && step === 3 && parseInt(typeChoose) === 2 &&
                             <ChooseDoctor
+                                type={2}
                                 goBack={handleGoback}
-                                value={watchFacility}
+                                valueBranch={watchFacility}
                                 onChangeDoctor={(id) => handleChangeDoctor(id)}
                             />
                         }
@@ -165,25 +312,29 @@ const BookingPage = () => {
                                 />
                             </>
                         }
-                        {watcDoctor && watchSpecialty && typeChoose == 2 && step === 4 &&
+                        {(watcDoctor || watchSpecialty) && typeChoose == 2 && step === 4 &&
                             <ChooseSpecialty
                                 value={watchFacility}
+                                valueDoctor={watcDoctor?._id}
                                 goBack={handleGoback}
-                                onChangeSpecialty={(id) => handleChangeSpecialty(id, 5)}
+                                onChangeSpecialty={(id, branch) => handleChangeSpecialty(id, 5, branch)}
                             />
                         }
                         {step === 5 &&
                             <ChooseService
                                 value={watchFacility}
                                 goBack={handleGoback}
+                                data={watchDataSubmit}
                                 onChangeService={(id) => handleChangeService(id, 6)}
                             />
                         }
                         {step === 6 &&
                             <ChooseDate
                                 value={watchFacility}
+                                data={watchDataSubmit}
                                 goBack={handleGoback}
-                                onChange={(date, time) => handleChangeDateTime(date, time)}
+                                watch={watch}
+                                onChange={(shift) => handleChangeDateTime(shift)}
                             />
                         }
                         {watchShift && step === 7 &&
@@ -212,7 +363,7 @@ const BookingPage = () => {
                 {/* {step > 1 &&
                     <Button
                         startIcon={<ArrowBackIosNewIcon />}
-                        className='w-28' href="#text-buttons" onClick={() => handleGoback()}>
+                        className='w-28' onClick={() => handleGoback()}>
                         Quay lại
                     </Button>
                 } */}

@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 import { Badge, Calendar } from 'antd';
 import { Button } from '@mui/material';
 import { getDate } from '../../utils/Utils';
-import ButonOutLine from '../Button/ButonOutLine';
+import ButtonOutLine from '../Button/ButonOutLine';
 import { useFormContext } from 'react-hook-form';
 import Record from '../ProfileChild/Record/Record';
 
@@ -13,7 +13,6 @@ import Record from '../ProfileChild/Record/Record';
 const ChooseProfile = props => {
     const { goBack, value, onChange } = props
     const handleClickProfile = (value) => {
-        console.log("🚀 ~ handleClickProfile ~ value:", value)
         onChange(value)
     };
 
@@ -49,7 +48,7 @@ const ChooseProfile = props => {
                                 <Button
                                     startIcon={<ArrowBackIosNewIcon />}
                                     onClick={goBack}
-                                    className='w-28' href="#text-buttons"
+                                    className='w-28'
                                 >
                                     Quay lại
                                 </Button>

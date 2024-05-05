@@ -1,38 +1,35 @@
-import PropTypes from 'prop-types';
 import BoxCustom from '../Box/Box';
-import InputSearch from '../Input/InputSearch';
-import DescriptionDoctor from '../Description/DescriptionDoctor/DescriptionDoctor';
-import { Button } from '@mui/material';
+import { Button, Popover } from '@mui/material';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import CustomTable from '../CustomTable/CustomTable';
-import { convertStringToNumber } from '../../utils/Utils';
-import ButonOutLine from '../Button/ButonOutLine';
 import ButonBooking from '../Button/ButonBooking';
+import { Modal } from 'antd';
+import { useState } from 'react';
 
 
-function createData(stt, id, name, cost) {
+function createData(stt, id, name, detail) {
     return {
         stt,
         id,
         name,
-        cost
+        detail,
     };
 }
 
 const rows = [
-    createData(1, 1, 'Khám dịch vụ', 100000),
-    createData(2, 2, 'Khám tổng quan', 200000),
-    createData(3, 3, 'Khám nội soi', 300000),
+    createData(1, 1, 'Khám trong giờ', 'Khung giờ khám từ 7h30p – 16h, từ thứ Hai đến thứ Bảy. '),
+    createData(2, 2, 'Khám ngoài giờ', 'Khung giờ khám từ 16h – 18h30, từ thứ Hai đến thứ Bảy. '),
+    createData(3, 3, 'Khám online', 'Khách hàng/ người bệnh sẽ được khám, trao đổi trực tiếp với bác sĩ giống như hình thức khám bệnh trực tiếp thông thường, thông qua một nền tảng/ ứng dụng/ phần mềm liên lạc trực tuyến. “Khám bệnh online” 1:1 có thể bao gồm khai thác bệnh sử, tư vấn khám chữa bệnh, chỉ định cận lâm sàng, kê toa thuốc (có điều kiện kèm theo), hướng dẫn các phương pháp đơn giản mà người bệnh có thể tự thực hiện để hỗ trợ điều trị và chăm sóc sức khoẻ. ')
 ];
 
 
 const ChooseService = props => {
-    const { goBack, value, onChangeService } = props
+    const { goBack, data, onChangeService } = props
+    const [openDetail, setOpenDetail] = useState();
+
     function handleChangService(id) {
-        console.log("🚀 ~ handleChangService ~ id:", id)
         onChangeService(id)
     }
-
     const headCells = [
         {
             id: 'stt',
@@ -55,29 +52,46 @@ const ChooseService = props => {
             disablePadding: false,
             label: 'Tên dịch vụ',
         },
-        {
-            id: 'cost',
-            align: 'right',
-            numeric: true,
-            disablePadding: false,
-            money: true,
-            label: 'Giá tiền',
-            component: (data) => {
-                return (
-                    <div>{convertStringToNumber(data?.cost)}</div>
-                )
-            }
-        },
+        // {
+        //     id: 'cost',
+        //     align: 'right',
+        //     numeric: true,
+        //     disablePadding: false,
+        //     money: true,
+        //     label: 'Giá tiền',
+        //     component: (data) => {
+        //         return (
+        //             <div>{convertStringToNumber(data?.cost)}</div>
+        //         )
+        //     }
+        // },
         {
             id: 'detail',
-            numeric: true,
             width: 120,
             align: 'right',
             disablePadding: false,
-            label: '',
+            label: 'Thông tin',
             component: (data) => {
                 return (
-                    <ButonOutLine size='small' borderRadius={8} onClick={() => handleClickBook()}> Chi tiết</ButonOutLine>
+                    <>
+                        <Button onClick={() => setOpenDetail(data.detail)} style={{ border: '1px solid #1fb6ff', fontWeight: 'bold', borderRadius: 12, padding: '4px 10px' }}>
+                            Chi tiết
+                        </Button>
+                        <Modal
+                            title={<span className='text-2xl  font-bold text-blue'>Thông tin dịch vụ</span>}
+                            open={openDetail != null}
+                            width={600}
+                            onCancel={() => {
+                                setOpenDetail(null)
+                            }}
+                            footer=""
+                        >
+                            <div>
+                                {openDetail}
+                            </div>
+                        </Modal>
+                    </>
+
                 )
             }
         },
@@ -107,10 +121,10 @@ const ChooseService = props => {
                         description={
                             <div className='flex flex-col gap-2'>
                                 <span className="text-[#111] font-bold" >
-                                    Bệnh viện Đại học Y Dược TP.HCM
+                                    {data?.Branch?.name}
                                 </span>
                                 <span className="leading-4 text-sm" >
-                                    Cơ sở 201 Nguyễn Chí Thanh, Phường 12, Quận 5, TP. Hồ Chí Minh
+                                    {data?.Branch?.address}
                                 </span>
                             </div>
                         }
@@ -132,7 +146,7 @@ const ChooseService = props => {
                                 <Button
                                     startIcon={<ArrowBackIosNewIcon />}
                                     onClick={goBack}
-                                    className='w-28' href="#text-buttons">Quay lại</Button>
+                                    className='w-28'>Quay lại</Button>
 
                             </div>
                         }

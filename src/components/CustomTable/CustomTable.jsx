@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import { alpha } from '@mui/material/styles';
@@ -13,13 +14,13 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
-import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
-import { convertStringToNumber, partStringToNumber } from '../../utils/Utils';
+import { partStringToNumber } from '../../utils/Utils';
+import IcEmpty from '../../assets/icon/IcEmpty';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -124,18 +125,24 @@ function EnhancedTableHead(props) {
                             // color: '#fff!important'
                         }}
                     >
-                        <TableSortLabel
-                            active={headCell?.isSort === true && orderBy === headCell.id}
-                            direction={orderBy === headCell.id ? order : 'asc'}
-                            onClick={createSortHandler(headCell.id)}
-                        >
-                            {headCell.label}
-                            {orderBy === headCell.id ? (
-                                <Box component="span" sx={visuallyHidden}>
-                                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                                </Box>
-                            ) : null}
-                        </TableSortLabel>
+                        {
+                            headCell.numeric ? <>     <TableSortLabel
+                                active={false}
+                                direction={orderBy === headCell.id ? order : 'asc'}
+                                onClick={createSortHandler(headCell.id)}
+                            >
+                                {headCell.label}
+                                {orderBy === headCell.id ? (
+                                    <Box component="span" sx={visuallyHidden}>
+                                        {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                    </Box>
+                                ) : null}
+                            </TableSortLabel></> :
+                                <>
+                                    {headCell.label}
+                                </>
+                        }
+
                     </TableCell>
                 ))}
             </TableRow>
@@ -209,6 +216,7 @@ EnhancedTableToolbar.propTypes = {
 
 export default function CustomTable(props) {
     const {
+        // eslint-disable-next-line react/prop-types
         isShowtitleRow = false,
         headCells = [],
         handleClickRow = () => { },
@@ -297,6 +305,7 @@ export default function CustomTable(props) {
                         aria-labelledby="tableTitle"
                         size={dense ? 'small' : 'medium'}
                     >
+
                         <EnhancedTableHead
                             headCells={headCells}
                             numSelected={selected.length}
@@ -306,46 +315,55 @@ export default function CustomTable(props) {
                             onRequestSort={handleRequestSort}
                             rowCount={rows.length}
                         />
-                        <TableBody>
-                            {visibleRows.map((row, indexR) => {
-                                const isItemSelected = isSelected(row.id);
-                                return (
+
+                        {rows?.length > 0 &&
+                            <TableBody>
+                                {visibleRows.map((row, indexR) => {
+                                    const isItemSelected = isSelected(row.id);
+                                    return (
+                                        <TableRow
+                                            hover
+                                            onClick={(event) => handleClick(event, row)}
+                                            role="checkbox"
+                                            aria-checked={isItemSelected}
+                                            tabIndex={-1}
+                                            key={row.id}
+                                            selected={isItemSelected}
+                                            sx={{ cursor: 'pointer' }}
+                                        >
+                                            {headCells?.map((item, index) => {
+                                                return (
+                                                    <>
+                                                        <TableCell
+                                                            key={index}
+                                                            style={{ fontWeight: item?.fontWeight ? item.fontWeight : '' }}
+                                                            align={item?.align || item?.money ? item?.align : 'left'}>{item?.component ? item?.component(row, indexR) : (row?.money ? partStringToNumber(row[item.id]) : row[item.id])}</TableCell>
+                                                    </>
+                                                )
+                                            }
+                                            )}
+                                        </TableRow>
+                                    );
+                                })}
+                                {emptyRows > 0 && (
                                     <TableRow
-                                        hover
-                                        onClick={(event) => handleClick(event, row.id)}
-                                        role="checkbox"
-                                        aria-checked={isItemSelected}
-                                        tabIndex={-1}
-                                        key={row.id}
-                                        selected={isItemSelected}
-                                        sx={{ cursor: 'pointer' }}
+                                        style={{
+                                            height: (dense ? 33 : 53) * emptyRows,
+                                        }}
                                     >
-                                        {headCells?.map((item, index) => {
-                                            return (
-                                                <>
-                                                    <TableCell
-                                                        key={index}
-                                                        style={{ fontWeight: item?.fontWeight ? item.fontWeight : '' }}
-                                                        align={item?.align || item?.money ? item?.align : 'left'}>{item?.component ? item?.component(row, indexR) : (row?.money ? partStringToNumber(row[item.id]) : row[item.id])}</TableCell>
-                                                </>
-                                            )
-                                        }
-                                        )}
+                                        <TableCell colSpan={6} />
                                     </TableRow>
-                                );
-                            })}
-                            {emptyRows > 0 && (
-                                <TableRow
-                                    style={{
-                                        height: (dense ? 33 : 53) * emptyRows,
-                                    }}
-                                >
-                                    <TableCell colSpan={6} />
-                                </TableRow>
-                            )}
-                        </TableBody>
+                                )}
+                            </TableBody>
+                        }
                     </Table>
                 </TableContainer>
+
+                {rows.length == 0 &&
+                    <div className="flex relative left-[40%]">
+                        <IcEmpty />
+                    </div>
+                }
 
                 {isShowPagination &&
                     <TablePagination

@@ -1,22 +1,89 @@
-import { Button, Pagination } from '@mui/material';
-import { Avatar } from 'antd';
-import { useState } from 'react';
+import { Pagination } from '@mui/material';
+import { Spin } from 'antd';
+import { useEffect, useState } from 'react';
 import CardCustom from '../../components/Card/CardCustom';
-import IcLocation from '../../assets/icon/ic-location.svg'
-import ButonBooking from '../../components/Button/ButonBooking';
-import ButonOutLine from '../../components/Button/ButonOutLine';
 import InputSearch from '../../components/Input/InputSearch';
+import Factories from '../../services/FactoryApi';
+import { toast } from 'react-toastify';
+import { ToastNotiError } from '../../utils/Utils';
+import DescriptionDoctor from '../../components/Description/DescriptionDoctor/DescriptionDoctor';
+import ButtonOutLine from '../../components/Button/ButonOutLine';
+import { useNavigate } from 'react-router-dom';
 
 const DoctorPage = () => {
-    const [inputSearch, setInputSearch] = useState();
     const [page, setPage] = useState(1);
+    const [valueSearch, setValueSearch] = useState();
+    const [dataList, setDataList] = useState([]);
+    const [dataListPage, setDataListPage] = useState([]);
+    const [dataListBranch, setDataListBranch] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate()
+    const fetchData = async (value) => {
+        setLoading(true)
+        try {
+            const response = await Factories.getAccountList(value, 2);
+            if (response) {
+                setDataList(response);
+            } else {
+                toast.error('Hệ thống lỗi')
+                console.error("API response does not contain expected data:", response);
+            }
+            setLoading(false)
+        } catch (error) {
+            toast.error('Hệ thống lỗi')
+            setLoading(false)
+        }
+    };
 
-    function handleChangeInput(e) {
-        setInputSearch(e.target.value)
+    const fetchDataBranch = async (keyword) => {
+        try {
+            const response = await Factories.getBranchList(keyword);
+            if (response) {
+                const newDate = response?.map(item => ({
+                    value: item._id,
+                    label: item.name,
+                }))
+                setDataListBranch(newDate);
+            }
+        } catch (error) {
+            ToastNotiError(error);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+        fetchDataBranch()
+    }, []);
+
+    function handleReload() {
+        fetchData();
     }
+
+    useEffect(() => {
+        if (valueSearch && valueSearch !== '') {
+            fetchData(valueSearch);
+        }
+        else {
+            handleReload()
+        }
+    }, [valueSearch])
+
+
+    useEffect(() => {
+        // Tính chỉ số bắt đầu và kết thúc của trang hiện tại
+        const startIndex = (page - 1) * pageSize;
+        const endIndex = startIndex + pageSize;
+        // Dữ liệu của trang hiện tại
+        const currentPageData = dataList.slice(startIndex, endIndex);
+        setDataListPage(currentPageData)
+    }, [page, dataList])
+
+
     const handleChangePage = (event, page) => {
         setPage(page);
     };
+    const pageSize = 10;
+
 
     return (
         <div className="w-full flex flex-col justify-center items-center">
@@ -30,128 +97,43 @@ const DoctorPage = () => {
                 </span>
                 {/* input search */}
                 <div className="my-8 w-[600px]" >
-                    {/* <div className="flex items-center gap-5 w-[600px] border border-gray-200 rounded-3xl py-2 px-5">
-                        <span className="flex-shrink-0 text-gray-500">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="w-6 h-6"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                                />
-                            </svg>
-                        </span>
-                        <input
-                            type="text"
-                            onChange={(e) => handleChangeInput(e)}
-                            value={inputSearch}
-                            className="w-full outline-none bg-transparent"
-                            placeholder={'Tìm kiếm ...'}
-                        />
-                        <button onClick={() => setInputSearch('')} className=" border-none flex-shrink-0 text-slate-500">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="w-6 h-6"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M6 18L18 6M6 6l12 12"
-                                />
-                            </svg>
-                        </button>
-                    </div> */}
-
                     <InputSearch
                         className='border border-1 border-blue w-full'
-                        isHaveSelect
-                        placeholderSelect='Chuyên khoa'
+                        onChangeInput={(e) => setValueSearch(e)}
                     />
                 </div>
 
                 {/* select search */}
-
                 <div className="flex flex-col gap-2  w-full">
-                    {/* <div className="flex flex-col gap-2 w-full p-4">
-                        <div className="flex flex-row gap-4 justify-start w-full">
-                            <Avatar style={{ height: 150, width: 150 }} />
-                            <div className="mt-2 w-[80%] flex flex-col">
-                                <span className="text-xl ">BS.CKII PHẠM LÊ MỸ HẠNH</span>
-                                <span className="text-sm text-gray">Trưởng khoa</span>
-                                <span className="text-sm text-gray">Trung tâm Sơ sinh</span>
-                                <span className="text-sm text-gray">TTƯT.PGS.TS Triệu Triều Dương là chuyên gia hàng đầu ngành phẫu thuật tiêu hóa: phẫu thuật thực quản, dạ dày, ruột, gan mật tụy, đại trực tràng, hậu môn, sàn chậu</span>
-                            </div>
-                        </div>
-                        <div className='flex flex-row justify-end gap-4'>
-                            <Button variant="outlined" >Đặt lịch hẹn</Button>
-                            <Button variant="contained">Xem chi tiết</Button>
-                        </div>
-                    </div> */}
+                    {loading ? <Spin></Spin> :
+                        <>
+                            {dataListPage?.map(item => (
+                                <CardCustom
+                                    key={item._id}
+                                    showAvatar={false}
+                                    // title={item.fullName}
+                                    // src={item.avatar}
+                                    content={<DescriptionDoctor data={item} />}
+                                    // content={
+                                    //     <ul className="w-[80%] flex flex-col">
+                                    //         <li className="text-sm text-gray">Trưởng khoa</li>
+                                    //         <li className="text-sm text-gray">Trung tâm Sơ sinh</li>
+                                    //         <li className="text-sm text-gray">TTƯT.PGS.TS Triệu Triều Dương là chuyên gia hàng đầu ngành phẫu thuật tiêu hóa: phẫu thuật thực quản, dạ dày, ruột, gan mật tụy, đại trực tràng, hậu môn, sàn chậu</li>
+                                    //     </ul>
+                                    // }
+                                    footer={
+                                        <div className="flex mt-4 flex-row justify-center gap-2 items-center">
+                                            <ButtonOutLine onClick={() => navigate(`/doctor/${item?._id}`)}> Xem chi tiết</ButtonOutLine>
+                                        </div>
+                                    }
+                                />
+                            ))}</>
+                    }
 
-                    <CardCustom
-                        title='BS.CKII PHẠM LÊ MỸ HẠNH'
-                        src="https://api.dicebear.com/7.x/miniavs/svg?seed=2"
-                        content={
-                            <div className="w-[80%] flex flex-col">
-                                <span className="text-sm text-gray">Trưởng khoa</span>
-                                <span className="text-sm text-gray">Trung tâm Sơ sinh</span>
-                                <span className="text-sm text-gray">TTƯT.PGS.TS Triệu Triều Dương là chuyên gia hàng đầu ngành phẫu thuật tiêu hóa: phẫu thuật thực quản, dạ dày, ruột, gan mật tụy, đại trực tràng, hậu môn, sàn chậu</span>
-                            </div>
-                        }
-                        footer={
-                            <div className="flex mt-4 flex-row justify-center gap-2 items-center">
-                                <ButonBooking />
-                                <ButonOutLine> Xem chi tiết</ButonOutLine>
-                            </div>
-                        }
-                    />
-                    <CardCustom
-                        title='BS.CKII PHẠM LÊ MỸ HẠNH'
-                        src="https://api.dicebear.com/7.x/miniavs/svg?seed=2"
-                        content={
-                            <div className="w-[80%] flex flex-col">
-                                <span className="text-sm text-gray">Trưởng khoa</span>
-                                <span className="text-sm text-gray">Trung tâm Sơ sinh</span>
-                                <span className="text-sm text-gray">TTƯT.PGS.TS Triệu Triều Dương là chuyên gia hàng đầu ngành phẫu thuật tiêu hóa: phẫu thuật thực quản, dạ dày, ruột, gan mật tụy, đại trực tràng, hậu môn, sàn chậu</span>
-                            </div>
-                        }
-                        footer={
-                            <div className="flex mt-4 flex-row justify-center gap-2 items-center">
-                                <ButonBooking />
-                                <ButonOutLine> Xem chi tiết</ButonOutLine>
-                            </div>
-                        }
-                    />
-                    <CardCustom
-                        title='BS.CKII PHẠM LÊ MỸ HẠNH'
-                        src="https://api.dicebear.com/7.x/miniavs/svg?seed=2"
-                        content={
-                            <div className="w-[80%] flex flex-col">
-                                <span className="text-sm text-gray">Trưởng khoa</span>
-                                <span className="text-sm text-gray">Trung tâm Sơ sinh</span>
-                                <span className="text-sm text-gray">TTƯT.PGS.TS Triệu Triều Dương là chuyên gia hàng đầu ngành phẫu thuật tiêu hóa: phẫu thuật thực quản, dạ dày, ruột, gan mật tụy, đại trực tràng, hậu môn, sàn chậu</span>
-                            </div>
-                        }
-                        footer={
-                            <div className="flex mt-4 flex-row justify-center gap-2 items-center">
-                                <ButonBooking />
-                                <ButonOutLine> Xem chi tiết</ButonOutLine>
-                            </div>
-                        }
-                    />
+
 
                     <div className='w-full mt-4 flex justify-end float-right'>
-                        <Pagination count={10} component="div" onChange={(e, page) => handleChangePage(e, page)} showFirstButton showLastButton />
+                        <Pagination count={dataList.length <= pageSize ? 1 : Math.ceil(dataList.length / pageSize)} component="div" onChange={(e, page) => handleChangePage(e, page)} showFirstButton showLastButton />
                     </div>
 
                 </div>

@@ -30,7 +30,7 @@ import { useNavigate } from 'react-router-dom';
 const HomePage = () => {
     const [index, setIndex] = useState(0);
     const [placeholder, setPlaceholder] = useState("Tìm kiếm bác sĩ, chuyên khoa...");
-
+    const navigate = useNavigate()
     useEffect(() => {
         const timer = setTimeout(() => {
             setIndex(prevIndex => prevIndex + 1);
@@ -78,15 +78,15 @@ const HomePage = () => {
                 <div className="flex flex-col ">
                     <div className='relative pt-40'>
                         <div className="flex flex-row gap-4">
-                            <button  onClick={() => navigator('/booking?type=1')}  className="w-32 h-32 hover:shadow  rounded-xl gap-3 flex-col bg-[#fff] flex justify-center items-center">
+                            <button onClick={() => navigator('/booking?type=1')} className="w-32 h-32 hover:shadow  rounded-xl gap-3 flex-col bg-[#fff] flex justify-center items-center">
                                 <img className='w-12' src={CAL} />
                                 <p className='text-xs text-center  border-none w-[70px] break-all'>Đặt khám tại cơ sở</p>
                             </button>
-                            <button  onClick={() => navigator('/booking?type=2')}   className="w-32 hover:shadow   h-32 rounded-xl gap-3 flex-col bg-[#fff] flex justify-center items-center">
+                            <button onClick={() => navigator('/booking?type=2')} className="w-32 hover:shadow   h-32 rounded-xl gap-3 flex-col bg-[#fff] flex justify-center items-center">
                                 <img className='w-12' src={ICH2} />
                                 <p className='border-none text-xs text-center  w-[80px] break-all'>Đặt khám theo bác sĩ</p>
                             </button>
-                            <button onClick={()=> navigator('/question')} className="w-32 h-32 hover:shadow    rounded-xl gap-3 flex-col bg-[#fff] flex justify-center items-center">
+                            <button onClick={() => navigator('/question/3')} className="w-32 h-32 hover:shadow    rounded-xl gap-3 flex-col bg-[#fff] flex justify-center items-center">
                                 <img className='w-12' src={ICH3} />
                                 <p className='text-xs text-center w-[105px] break-all'>Tư vấn khám bệnh trực tuyến</p>
                             </button>
@@ -247,7 +247,7 @@ const HomePage = () => {
                     <span className='w-[600px]'>
                         Bệnh nhân chủ động chọn thông tin đặt khám nhanh (ngày khám, giờ khám và cơ sở y tế). Bệnh nhân sẽ nhận lấy số thứ tự trực tuyến ngay trên phần mềm
                     </span>
-                    <ButonBooking />
+                    <ButonBooking onClick={() => navigate('/booking')} />
                 </div>
             </div>
 

@@ -24,33 +24,10 @@ import IC9 from '../../../assets/icon/ic-nationnality.svg'
 import Constants from '../../../utils/constants';
 import Factories from '../../../services/FactoryApi';
 import { AuthContext } from '../../../context/auth.context';
-import { ToastDel, ToastInfo, ToastNoti, ToastNotiError, getDate } from '../../../utils/Utils';
+import { ToastDel, ToastNotiError, getDate } from '../../../utils/Utils';
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
-
-function createData(id, name, date, phone, gender, address, cmnd, email, job, nation, nationality) {
-    return {
-        id,
-        name,
-        date,
-        phone,
-        gender,
-        address,
-        cmnd,
-        email,
-        job,
-        nation,
-        nationality
-    };
-}
-
-const data = [
-    createData(1, 'Hoàng Văn Nam', '22/06/2001', '09201019111', '1', 'k44 nguyễn lương bằng, Phường Hòa Hiệp Bắc, Quận Liên Chiểu, Thành phố Đà Nẵng', '04410003343434', 'hoangvana@gmail.com', 'Kỹ sư công nghệ thông tin', 'Kinh', 'Việt Nam'),
-    createData(2, 'Hoàng Văn Duy', '22/06/2001', '09201019111', '1', '10 Hà Văn Tính'),
-    createData(3, 'Nguyễn Hồng Phú', '22/06/2001', '09201019111', '2', '10 Hà Văn Tính'),
-];
-
 
 const Record = props => {
     const { isBooking = false, onClickBox } = props
@@ -58,7 +35,7 @@ const Record = props => {
     const [open, setOpen] = useState();
     const [listData, setListData] = useState([]);
     const { user } = useContext(AuthContext);
-
+    const navigate = useNavigate()
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     async function getListPatient() {
@@ -77,7 +54,8 @@ const Record = props => {
         getListPatient()
     }, [])
     const showModal = (item) => {
-        setIsModalOpen(item);
+        navigate(`/patient/${item?._id}`)
+        // setIsModalOpen(item);
     };
 
     const handleClickOpen = (id) => {
@@ -141,23 +119,35 @@ const Record = props => {
             <div className="mt-6 flex flex-col gap-4 w-[900px]">
                 {listData?.map(item => {
                     return (
-                        <div key={item.id}>
-                            <Box
-                                onClick={() => handleClickBox(11111)}
-                                actions={[
-                                    <button key="del"><DeleteOutlined style={{ color: '#ff3b30' }}
-                                        onClick={() => {
-                                            handleClicDelete(item?._id)
-                                        }}
-                                    // onClick={() => handleClickDel(item.id)}
-                                    /> </button>,
-                                    <button key="edit"><EditOutlined style={{ color: '#00b5f1' }} onClick={() => navigator(`/update-profile/${item._id}`)} /> </button>,
-                                    <button key="info"><InfoOutlined onClick={() => {
-                                        showModal(item)
-                                    }} /> </button>,
-                                ]}
-                                description={<DescriptionProfile data={item} />}
-                            />
+                        <div key={item._id}>
+                            {isBooking ? <>
+                                <Box
+                                    onClick={() => handleClickBox(item)}
+                                    description={<DescriptionProfile data={item} />}
+                                />
+                            </>
+                                : <>
+                                    <Box
+                                        onClick={() => handleClickBox(item)}
+                                        actions={[
+                                            <button key="del"
+                                                onClick={() => {
+                                                    handleClicDelete(item?._id)
+                                                }}
+                                            // onClick={() => handleClickDel(item.id)}
+                                            >
+                                                <DeleteOutlined style={{ color: '#ff3b30' }} />
+                                            </button>,
+                                            <button key="edit"><EditOutlined style={{ color: '#00b5f1' }} onClick={() => navigator(`/update-profile/${item._id}`)} /> </button>,
+                                            <button key="info"><InfoOutlined
+                                                onClick={() => {
+                                                    showModal(item)
+                                                }} /> </button>,
+                                        ]}
+                                        description={<DescriptionProfile data={item} />}
+                                    />
+                                </>}
+
                         </div>
                     );
                 })}

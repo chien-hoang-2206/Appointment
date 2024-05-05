@@ -1,59 +1,81 @@
-import React from 'react';
+import { useContext, useEffect, useState } from 'react';
 import CustomTable from '../../CustomTable/CustomTable';
-import { useNavigation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { Tag } from 'antd';
+import { Spin, Tag } from 'antd';
 import Constants from '../../../utils/constants';
-
-
-function createData(id, name, doctor, speciality, date, status) {
-    return {
-        id,
-        name,
-        doctor,
-        speciality,
-        date,
-        status,
-    };
-}
-
-const rows = [
-    createData(1, 'Hoàng Văn Nam', 'Âu Dương', 'Khoa Mắt', '22/02/2024', 10),
-    createData(2, 'Donut', 'Âu Dương', 'Khoa Mắt', '22/02/2024', 20),
-    createData(3, 'Eclair', 'Âu Dương', 'Khoa Mắt', '22/02/2024', 20),
-    createData(4, 'Frozen yoghurt', 'Âu Dương', 'Khoa Mắt', '22/02/2024', 40),
-    createData(5, 'Gingerbread', 'Âu Dương', 'Khoa Mắt', '22/02/2024', 40),
-    createData(6, 'Honeycomb', 'Âu Dương', 'Khoa Mắt', '22/02/2024', 40),
-    createData(7, 'Ice cream sandwich', 'Âu Dương', 'Khoa Mắt', '22/02/2024', 40),
-];
+import { AuthContext } from '../../../context/auth.context';
+import Factories from '../../../services/FactoryApi';
+import { ToastNotiError, getDate } from '../../../utils/Utils';
+import { FlareSharp } from '@mui/icons-material';
 
 
 const headCells = [
     {
         id: 'name',
         numeric: false,
+        isSort: false,
         disablePadding: false,
-        label: 'Tên bênh nhân'
+        label: 'Tên bênh nhân',
+        component: (data) => {
+            return (
+                <>
+                    {data.patientInfo.fullName}
+                </>
+            )
+        }
     },
     {
         id: 'doctor',
         align: 'left',
         disablePadding: false,
         label: 'Bác sĩ',
-
+        component: (data) => {
+            return (
+                <>
+                    {data.doctorInfo.fullName}
+                </>
+            )
+        }
     },
     {
         id: 'speciality',
         align: 'left',
         label: 'Khoa khám',
         disablePadding: false,
+        component: (data) => {
+            return (
+                <>
+                    {data.shiftInfo.departmentName}
+                </>
+            )
+        }
     },
     {
         id: 'date',
-        numeric: true,
         align: 'center',
         disablePadding: false,
         label: 'Ngày',
+        component: (data) => {
+            return (
+                <>
+                    {getDate(data.shiftInfo.date)}
+                </>
+            )
+        }
+    },
+    {
+        id: 'time',
+        // numeric: true,
+        align: 'center',
+        disablePadding: false,
+        label: 'Ca khám',
+        component: (data) => {
+            return (
+                <>
+                    {`${getDate(data.shiftInfo.timeStart, 6)} - ${getDate(data.shiftInfo.timeEnd, 6)}`}
+                </>
+            )
+        }
     },
     {
         id: 'status',
@@ -62,7 +84,7 @@ const headCells = [
         maxWidth: 80,
         disablePadding: false,
         label: 'Trạng thái',
-        component: (data, index) => {
+        component: (data) => {
             return (
                 <Tag color={Constants.labelStatus.find(item => item?.value === data?.status)?.status}>{Constants.labelStatus.find(item => item?.value === data?.status)?.label}</Tag>
             )
@@ -72,11 +94,43 @@ const headCells = [
 
 const DescriptionBills = () => {
     const navigate = useNavigate()
-    function handleClickRow(id) {
-        navigate(`/appointments/${id}`)
+    const { user } = useContext(AuthContext);
+    const [bookingList, setBookingList] = useState([]);
+    const [loading, setLoading] = useState();
+    useEffect(() => {
+        fetchDataBookingList();
+    }, []);
+    const fetchDataBookingList = async () => {
+        try {
+            setLoading(true)
+            let data = {}
+            if (user.role_id === 1) {
+                data.UserId = user.id
+            }
+            if (user.role_id === 2) {
+                data.DoctorId = user.id
+            }
+            const resp = await Factories.getListBooking(data);
+            setLoading(false)
+            setBookingList(resp);
+        } catch (error) {
+            ToastNotiError();
+            setLoading(true)
+
+        }
+    };
+
+    function handleClickRow(row) {
+        navigate(`/appointments/${row._id}`)
     }
+
+
     return (
-        <CustomTable headCells={headCells} rows={rows} handleClickRow={handleClickRow} />
+        <>
+            {loading ? <Spin></Spin> :
+                <CustomTable headCells={headCells} rows={bookingList} handleClickRow={handleClickRow} />
+            }
+        </>
     );
 };
 

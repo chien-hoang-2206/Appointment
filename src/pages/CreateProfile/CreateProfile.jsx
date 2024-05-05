@@ -1,6 +1,5 @@
-import { useParams } from "react-router-dom";
 import Box from "../../components/Box/Box";
-import UpdateProfile from "../../components/Description/UpdateProfile/DescriptionBill";
+import UpdateProfilePatient from "../../components/Description/UpdateProfile/UpdateProfilePatient";
 const CreateProfilePage = () => {
    
     return (
@@ -10,7 +9,7 @@ const CreateProfilePage = () => {
                     title={<span className="text-2xl">Tạo mới thông tin bệnh nhân</span>}
                     alignTitle='center'
                     isCanHover={false}
-                    description={<UpdateProfile/>}
+                    description={<UpdateProfilePatient/>}
                 />
             </div>
         </div>

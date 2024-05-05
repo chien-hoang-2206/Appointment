@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import Register from "../Register/Register";
 import Message from "../../components/UI/Message/Message";
-import { Select, Form, Input, Modal } from "antd";
+import { Select, Form, Input, Modal, Button } from "antd";
 
 const Login = (props) => {
   const { setUser } = useContext(AuthContext)
@@ -36,9 +36,9 @@ const Login = (props) => {
     props.onClose();
   };
   useEffect(() => {
-    document.title = `HINT | Đăng nhập`
+    document.title = `MEDPRO | Đăng nhập`
     return () => {
-      document.title = 'HINT';
+      document.title = 'MEDPRO';
     };
   }, [])
   const changeMessage = () => {
@@ -133,7 +133,7 @@ const Login = (props) => {
       }
 
     }
-
+    setLoading(false)
   };
 
   const setProfileForUser = (userDb, userFireBase = {}) => {
@@ -254,7 +254,14 @@ const Login = (props) => {
           </div>
 
           <div className="my-6 flex flex-row justify-center">
-            <button className="w-full px-10 py-2 text-2xl font-bold bg-blue2 text-gray-light hover:bg-blue transition-all duration-300 hover:text-[#fff] rounded-lg" type="submit" disabled={loading}>Đăng nhập</button>
+            <Button
+              className="w-full px-10 py-2 h-12 text-2xl font-bold bg-blue2 text-gray-light hover:bg-blue transition-all duration-300 hover:text-[#fff] rounded-lg"
+              type="submit"
+              disabled={loading}
+              onClick={(e) => onSubmitLogin(e)}
+              loading={loading}
+            >Đăng nhập
+            </Button >
           </div>
         </form>
         {/* <div className="my-3">

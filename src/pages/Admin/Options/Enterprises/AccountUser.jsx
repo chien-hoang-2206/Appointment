@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Table, Input, Select } from "antd";
 import Constants from "../../../../utils/constants";
 import DropdownOperation from "../../../../components/Dropdown/DropdownOperation";
 import classes from './AccountUser.module.scss'
 import Factories from "../../../../services/FactoryApi";
+import { ToastNoti } from "../../../../utils/Utils";
 
 const AccountUser = () => {
   const { Search } = Input;
@@ -48,7 +49,7 @@ const AccountUser = () => {
       showSorterTooltip: false,
     },
     {
-      title: 'Họ Tên',
+      title: 'Số tài khoản',
       width: 100,
       dataIndex: 'fullName',
       key: 'name',
@@ -82,49 +83,58 @@ const AccountUser = () => {
       width: 130,
       key: 'phone',
     },
-    {
-      title: 'Trạng thái',
-      dataIndex: 'status',
-      key: 'flag',
-      width: 200,
-      filters: [
-        {
-          text: 'Đang hoạt động',
-          value: 10,
-        },
-        {
-          text: 'Khóa tài khoản',
-          value: 20,
-        },
-      ],
-      onFilter: (value, record) => record.status === value,
-      render: (_, data) =>
-        <Select
-          style={{
-            width: "100%",
-          }}
-          onChange={(value) => onChangeSelectHandler(value, data?.id)}
-          value={data?.status}
-          options={Constants.optionStatusAccount}
-        />
-    },
+    // {
+    //   title: 'Trạng thái',
+    //   dataIndex: 'status',
+    //   key: 'flag',
+    //   width: 200,
+    //   filters: [
+    //     {
+    //       text: 'Đang hoạt động',
+    //       value: 10,
+    //     },
+    //     {
+    //       text: 'Khóa tài khoản',
+    //       value: 20,
+    //     },
+    //   ],
+    //   onFilter: (value, record) => record.status === value,
+    //   render: (_, data) =>
+    //     <Select
+    //       style={{
+    //         width: "100%",
+    //       }}
+    //       onChange={(value) => onChangeSelectHandler(value, data?._id)}
+    //       value={data?.status}
+    //       options={Constants.optionStatusAccount}
+    //     />
+    // },
     {
       title: 'Tác vụ',
       key: 'operation',
       width: 130,
       align: 'center',
       render: (_, record) => (
-        <DropdownOperation record={record} updateSuccess={handleReload} />
+        <DropdownOperation isUser record={record} updateSuccess={handleReload} />
       )
     },
   ];
 
-  const onChangeSelectHandler = (value, id) => {
-    console.log(value, id)
+  const onChangeSelectHandler = async (value, id) => {
+    try {
+      const data = {
+        status: value
+      }
+      const response = await Factories.updateStatus(data, id);
+      if (response) {
+        ToastNoti()
+        fetchApiList()
+      }
+    } catch (error) {
+      console.error("Error while fetching API:", error);
+    }
   };
 
-  const onChange = (pagination, filters, sorter, extra) => {
-  };
 
   return (
     <div className="p-5 flex flex-col gap-4">
@@ -136,7 +146,7 @@ const AccountUser = () => {
           <Search
             allowClear
             enterButton="Search"
-            className="bg-blue"
+            className="bg-white"
             onChange={(e) => setValueSearch(e.target.value)}
             onKeyDown={(e) => handleKeyDown(e)}
             placeholder="Tìm kiếm với tên,...."
@@ -148,8 +158,6 @@ const AccountUser = () => {
         <Table
           columns={columns}
           dataSource={userList ?? []}
-          onChange={onChange}
-
         />
       </div>
 

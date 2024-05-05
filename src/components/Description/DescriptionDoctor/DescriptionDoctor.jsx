@@ -15,21 +15,32 @@ const DescriptionDoctor = (props) => {
             <div className="flex flex-row justify-between">
                 <div className="flex flex-col gap-2 w-[80%]">
                     <DetailItem icon={IC1}
-                        styleTitle={'w-[400px]'}
-                        title={<span className='text-yellow w-full ' >{props?.data?.fullName }</span>}
+                        title={'Bác sĩ'}
+                        content={<span className='text-yellow text-xl' >{props?.data?.fullName}</span>}
                     />
-                    <DetailItem icon={IC6} title='Giới tính' content={Constants.optionSex?.find(item => item.value === parseInt(props?.data?.gender))?.label} />
-                    <DetailItem icon={IC7} title='Chuyên khoa' content={props?.data?.speciality} />
+                    <DetailItem icon={IC6} title='Giới tính' content={Constants.optionSex?.find(item => item.value === (props?.data?.gender))?.label} />
+                    <DetailItem icon={IC8} title='Cấp bậc' content={Constants.levelDoctor.find(item => item.value == parseInt(props?.data?.academicRank))?.label} />
+
                 </div>
                 <div className="flex  justify-center  items-start w-[20%]">
                     <Avatar
-                        style={{ height: 100, width: 100 }}
+                        style={{ height: 100, width: 100, objectFit: true }}
                         src={props?.data?.avatar ?? 'https://api.dicebear.com/7.x/miniavs/svg?seed=2'} />
                 </div>
             </div>
             <div className="gap-2 flex flex-col">
-                <DetailItem icon={IC8} title='Lịch khám' content={props?.data?.calendar} />
-                <DetailItem icon={IC9} title='Giá khám' content={props?.data?.cost} />
+                {/* <DetailItem icon={IC8} title='Lịch khám' content={props?.data?.calendar} /> */}
+                <DetailItem icon={IC7} title='Chuyên khoa' content={
+                    <div className='flex gap-1 flex-col'>
+                        {
+                            props?.data?.specialize?.map((item) => (
+                                <li className="list-disc" key={item}>{item}</li>
+                            ))
+                        }
+                    </div>
+                }
+                />
+                {/* <DetailItem icon={IC9} title='Giá khám' content={props?.data?.cost} /> */}
             </div>
         </div>
     )

@@ -1,53 +1,77 @@
 import { useEffect, useState } from "react";
-import { Input, Select, Table } from "antd";
+import { Input, Image, Select, Table } from "antd";
 import "./ManagerBranch.css";
-import { ToastNoti, ToastNotiError, convertStringToNumber, partStringToNumber as parseStringToNumber } from "../../../../utils/Utils";
-import AccountFactories from "../../../../services/AccountFactories";
+import { ToastNoti, ToastNotiError } from "../../../../utils/Utils";
 import Factories from "../../../../services/FactoryApi";
-import { Avatar, Button } from "@mui/material";
-import { Image, Modal } from "antd/es";
+import { Button } from "@mui/material";
+import { Modal } from "antd/es";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../../../firebase";
 import { v4 } from "uuid";
-import { AppstoreAddOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { AppstoreAddOutlined, EditOutlined } from "@ant-design/icons";
 import AvatarGroup from "../../../../components/image-group/AvatarGroup";
 
 const ManagerBranch = () => {
   const [keyword, setKeyword] = useState("");
+  const [loading, setLoading] = useState();
   const [listData, setListData] = useState([]);
   const [listDoctor, setListDoctor] = useState([]);
   const [openModalAdd, setOpenModalAdd] = useState(false)
+  const [openUpdateBranch, setOpenUpdateBranch] = useState(false)
   const [openModalAddDepart, setOpenModalAddDepart] = useState(false)
+  const [openEditDepartment, setOpenEditDepartment] = useState()
   const [fileUploadLink, setFileUploadLink] = useState();
   const [branchId, setBranchId] = useState();
+  const [departName, setDepartAddName] = useState()
+  const [doctorIds, setDoctorIds] = useState()
+  const [address, setAddress] = useState()
 
-  const fetchData = async (keyword) => {
-    try {
-      const response = await Factories.getBranchList(keyword);
-      setListData(response);
-    } catch (error) {
-      ToastNotiError(error);
-    }
-  };
-  const fetchDataDoctor = async (keyword) => {
-    try {
-      const response = await Factories.getAccountList(keyword, 2);
-      const option = response?.map((field) => {
-        return {
-          value: field._id,
-          key: field._id,
-          label: field.fullName,
-        };
-      });
-      setListDoctor(option);
-    } catch (error) {
-      ToastNotiError(error);
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchDataDoctor = async (branchId) => {
+    if (branchId) {
+      try {
+        const response = await Factories.getAccountList('', 2, branchId);
+        const option = response?.map((field) => {
+          return {
+            value: field._id,
+            key: field._id,
+            label: field.fullName,
+          };
+        });
+        setListDoctor(option);
+      } catch (error) {
+        ToastNotiError(error);
+      }
     }
   };
   useEffect(() => {
-    fetchData();
-    fetchDataDoctor()
-  }, []);
+    fetchDataDoctor(openModalAddDepart)
+  }, [openModalAddDepart]);
+
+  useEffect(() => {
+    fetchDataDoctor(openEditDepartment?.branchId)
+  }, [openEditDepartment]);
+
+  const fetchData = async (keyword) => {
+    setLoading(true)
+    try {
+      const response = await Factories.getBranchList(keyword);
+      const newData = response?.map(item => ({
+        key: item?._id,
+        ...item
+      }))
+      setListData(newData);
+      setLoading(false)
+    } catch (error) {
+      setLoading(false)
+      ToastNotiError(error);
+    }
+  };
+
+
 
   const columns = [
     {
@@ -95,25 +119,33 @@ const ManagerBranch = () => {
       align: 'center',
       render: (_, record) =>
         <div className="flex justify-center flex-row gap-2" >
-          <Button
-            variant="outline"
-            onClick={() => handleDeleteHotPgt(record)}
-          >
-            <DeleteOutlined className='text-red' />
-          </Button>
           {/* <Button
             variant="outline"
-            onClick={() => handleUpdate(record)}
+            onClick={() => handleDeleteBranch(record?._id)}
+          >
+            <DeleteOutlined className='text-red' />
+          </Button> */}
+          <Button
+            variant="outline"
+            onClick={() => {
+              setDepartAddName(record?.name)
+              setFileUploadLink(record?.image)
+              setAddress(record?.address)
+              setOpenUpdateBranch(record)
+            }
+            }
           >
             <EditOutlined />
-          </Button> */}
-        </div>
+          </Button>
+        </div >
     }
   ];
-  const [departName, setDepartAddName] = useState()
-  const [doctorIds, setDoctorIds] = useState()
-  const [address, setAddress] = useState()
 
+  function resetFill() {
+    setDepartAddName()
+    setFileUploadLink()
+    setAddress()
+  }
   const onAddBranchtSubmit = async () => {
     const data = {
       name: departName,
@@ -126,6 +158,28 @@ const ManagerBranch = () => {
         ToastNoti();
         fetchData()
         onCloseModalAddField()
+      } else {
+        ToastNotiError(resp?.message);
+      }
+    } catch (error) {
+      ToastNotiError();
+    }
+  }
+
+  const onUpdateBranchtSubmit = async () => {
+    const data = {
+      _id: openUpdateBranch?._id,
+      name: departName,
+      image: fileUploadLink,
+      address: address,
+    }
+    try {
+      const resp = await Factories.updateBranch(data);
+      if (resp) {
+        ToastNoti();
+        fetchData()
+        resetFill()
+        setOpenUpdateBranch()
       } else {
         ToastNotiError(resp?.message);
       }
@@ -153,6 +207,26 @@ const ManagerBranch = () => {
     }
   }
 
+  const onUpdateDepartmentSubmit = async () => {
+    const data = {
+      name: openEditDepartment.name,
+      _id: openEditDepartment._id,
+      doctorIds: openEditDepartment.doctorIds,
+    }
+    try {
+      const resp = await Factories.updateDepart(data);
+      if (resp) {
+        ToastNoti();
+        fetchData()
+        setOpenEditDepartment()
+      } else {
+        ToastNotiError(resp?.message);
+      }
+    } catch (error) {
+      ToastNotiError();
+    }
+  }
+
   const onChangeDataAddField = (event) => {
     setDepartAddName(event.target.value)
   }
@@ -163,32 +237,13 @@ const ManagerBranch = () => {
   const handleOnChangeInput = e => {
     setKeyword(e.target.value);
   };
-  const handleUpdate = async value => {
-    // const data = {
-    //   hot_pgt: true
-    // }
-    // try {
-    //   const response = await AccountFactories.requestUpdate(value?.id, data);
-    //   if (response.status === 200) {
-    //     ToastNoti();
-    //     fetchData(null, typeSearch);
-    //   } else {
-    //     ToastNotiError();
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    //   ToastNotiError();
-    // }
-  };
-  const handleDeleteHotPgt = async value => {
-    const data = {
-      hot_pgt: false
-    }
+
+  const handleDeleteBranch = async value => {
     try {
-      const response = await AccountFactories.requestUpdate(value?.id, data);
+      const response = await Factories.deleteBranch(value);
       if (response.status === 200) {
         ToastNoti();
-        fetchData(null, typeSearch);
+        fetchData();
       } else {
         ToastNotiError();
       }
@@ -220,13 +275,12 @@ const ManagerBranch = () => {
     fetchData();
   }
   const onCloseModalAddDepart = () => {
-    setOpenModalAddDepart(false)
-    setDepartAddName(null)
-    setDoctorIds(null)
-    fetchData();
+    setOpenModalAddDepart()
+    setDepartAddName()
+    setDoctorIds()
   }
   const handleAddDepartment = (_id) => {
-    setOpenModalAddDepart(true)
+    setOpenModalAddDepart(_id)
     setBranchId(_id)
   }
 
@@ -251,7 +305,7 @@ const ManagerBranch = () => {
         <span className='uppercase text-3xl'>Chi nhánh bệnh viện
         </span>
       </div>
-      <div className="booking-search">
+      <div className="booking-search flex flex-row justify-between">
         <Input
           placeholder="Tìm kiếm theo mã, tên người thuê, ..."
           size="middle "
@@ -259,24 +313,27 @@ const ManagerBranch = () => {
           className='w-[50%]'
           onKeyDown={(e) => handleKeyDown(e)}
           onChange={(e) => handleOnChangeInput(e)} />
-        <Button
-          variant="outlined"
-          onClick={handleReset}
-        >
-          Mặc định
-        </Button>
-        <Button
-          variant="contained"
-          onClick={handleSearch}
-        >
-          Tìm kiếm
-        </Button>
-        <Button variant="contained" onClick={onOpenModalAddField} >Thêm bệnh viện</Button>
+        <div className="flex flex-row gap-1">
+          <Button
+            variant="outlined"
+            onClick={handleReset}
+          >
+            Mặc định
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleSearch}
+          >
+            Tìm kiếm
+          </Button>
+          <Button variant="contained" onClick={onOpenModalAddField}>Thêm bệnh viện</Button>
+        </div>
       </div>
       <div className="booking-table">
         <Table
           columns={columns}
           dataSource={listData ?? []}
+          loading={loading}
           expandable={{
             expandedRowRender: (record) => (
               <div className="flex flex-col  w-full px-24 ">
@@ -291,39 +348,41 @@ const ManagerBranch = () => {
                   </Button>
                 </div>
                 <div className="flex justify-between my-4">
-                  <span className="font-bold"> Tên chuyên khoa</span>
-                  <span className="font-bold"> Danh sách bác sĩ</span>
-                  <span className="font-semibold">  </span>
+                  <span className="font-bold min-w-[200px]"> Tên chuyên khoa</span>
+                  <span className="font-bold min-w-[200px] text-center"> Danh sách bác sĩ</span>
+
+                  <span className="font-semibold"> Tác vụ</span>
                 </div>
                 {record?.departments?.map(department => (
                   <div key={department._id} className="flex justify-between my-1">
-                    <div className="flex flex-row justify-between items-center ">
-                      <span className="font-semibold min-w-[500px]">{department?.name}</span>
-                      <span className="font-thin flex flex-row justify-start items-center min-w-28">
-                        <AvatarGroup list={department?.doctors} />
-                      </span>
-                    </div>
+                    <span className="font-semibold min-w-[200px]">{department?.name}</span>
+                    <span className="font-thin flex flex-row items-center min-w-[200px] justify-center">
+                      <AvatarGroup list={department?.doctors} />
+                    </span>
                     <Button>
-                      <EditOutlined />
+                      <EditOutlined onClick={() => setOpenEditDepartment(department)} />
                     </Button>
                   </div>
                 ))}
 
               </div>
             ),
-            rowExpandable: (record) => record.name !== 'Not Expandable',
+            rowExpandable: (record) => record._id !== 'Not Expandable',
           }}
           pagination={{
-            defaultPageSize: 8,
-            showSizeChanger: false,
-            pageSizeOptions: ["10", "20", "30"]
+            defaultPageSize: 5,
+            showSizeChanger: true,
+            pageSizeOptions: ["5", "10", "30"]
           }}
         />
+
+        {/* // them benh vien`` */}
         <Modal
           width={800}
           title="Thêm bệnh viện"
           open={openModalAdd}
           onCancel={onCloseModalAddField}
+          afterClose={resetFill}
           footer={[]}
         >
           <div className='flex flex-row'>
@@ -335,12 +394,13 @@ const ManagerBranch = () => {
                 style={{ display: 'none' }}
                 onChange={(e) => handleChangeImage(e.target.files[0])}
               />
-              <Avatar
+              <Image
                 src={fileUploadLink ?? ''}
                 alt="avatar"
                 style={{ width: 150, height: 150 }}
+                fallback="data:image/png;base64,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"
               />
-              <label style={{ padding: '2px 50px', border: '1px solid #FAF8F1', borderRadius: 5 }} htmlFor="uploadInput" className='uploadButton'>
+              <label style={{ padding: '2px 50px', border: '1px solid #111', borderRadius: 5 }} htmlFor="uploadInput" className='uploadButton'>
                 Upload
               </label>
             </div>
@@ -370,6 +430,67 @@ const ManagerBranch = () => {
 
           </div>
         </Modal >
+
+
+
+        {/* sua thong tin benh vien */}
+        <Modal
+          width={800}
+          title="Sủa thông tin bệnh viện"
+          open={openUpdateBranch}
+          onCancel={() => {
+            resetFill()
+            setOpenUpdateBranch()
+          }}
+          afterClose={resetFill}
+          footer={[]}
+        >
+          <div className='flex flex-row'>
+            <div className='flex flex-col my-2'>
+              <input
+                id="uploadInput"
+                type="file"
+                className='uploadInput'
+                style={{ display: 'none' }}
+                onChange={(e) => handleChangeImage(e.target.files[0])}
+              />
+              <Image
+                src={openUpdateBranch?.image ?? ''}
+                alt="avatar"
+                style={{ width: 150, height: 150 }}
+                fallback="data:image/png;base64,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"
+              />
+              <label style={{ padding: '2px 50px', border: '1px solid #111', borderRadius: 5 }} htmlFor="uploadInput" className='uploadButton'>
+                Upload
+              </label>
+            </div>
+            <div className="flex w-full justify-between px-4 flex-col">
+              <div className='flex flex-col'>
+                <Input
+                  type="text"
+                  style={{ width: '100%' }}
+                  placeholder="Nhập tên bệnh viện "
+                  className='add-modal-input my-2'
+                  value={departName}
+                  onChange={onChangeDataAddField}
+                  name="name"
+                />
+                <Input
+                  type="text"
+                  style={{ width: '100%' }}
+                  placeholder="Nhập địa chỉ"
+                  className='add-modal-input my-2'
+                  value={address}
+                  onChange={onChangeDataAddress}
+                  name="address"
+                />
+              </div>
+              <Button variant="contained" style={{ width: '100%', float: 'right' }} onClick={onUpdateBranchtSubmit}>Lưu thông tin</Button>
+            </div>
+
+          </div>
+        </Modal >
+
 
         <Modal
           width={800}
@@ -404,6 +525,52 @@ const ManagerBranch = () => {
 
           </div>
         </Modal >
+
+
+        <Modal
+          width={800}
+          title="Cập nhật thông tin"
+          open={openEditDepartment}
+          onCancel={() => setOpenEditDepartment()}
+          footer={[]}
+        >
+          <div className='flex flex-row'>
+            <div className="flex w-full justify-between px-4 flex-col">
+              <div className='flex flex-col  gap-6'>
+                <Input
+                  type="text"
+                  style={{ width: '100%' }}
+                  placeholder="Nhập tên chuyên khoa"
+                  className='add-modal-input my-2'
+                  onChange={(e) => {
+                    setOpenEditDepartment(prevState => ({
+                      ...prevState,
+                      name: e.target.value
+                    }))
+                  }}
+                  value={openEditDepartment?.name}
+                  name="name"
+                />
+                <Select
+                  mode="multiple"
+                  placeholder='Chọn bác sĩ thuộc chuyên khoa'
+                  options={listDoctor}
+                  value={openEditDepartment?.doctorIds}
+                  onChange={(e) => {
+                    setOpenEditDepartment(prevState => ({
+                      ...prevState,
+                      doctorIds: e
+                    }))
+                  }}
+                  style={{ minWidth: 180 }}
+                />
+                <Button variant="contained" style={{ width: '100%', float: 'right' }} onClick={onUpdateDepartmentSubmit}>Lưu thông tin</Button>
+              </div>
+            </div>
+
+          </div>
+        </Modal >
+
       </div>
     </div>
   );

@@ -2,10 +2,14 @@ import { Select } from 'antd';
 import { useState } from 'react';
 
 const InputSearch = (props) => {
-    const { className, isHaveSelect = false, placeholder, placeholderSelect = 'Tìm kiếm thành phố', options = [] } = props
+    const { className, isHaveSelect = false, onChangeInput = () => { }, placeholder, placeholderSelect = 'Tìm kiếm thành phố', options = [] } = props
     const [inputSearch, setInputSearch] = useState();
     function handleChangeInput(e) {
         setInputSearch(e.target.value)
+        const timeoutId = setTimeout(() => {
+            onChangeInput(e.target.value)
+            clearTimeout(timeoutId)
+        }, 600);
     }
     return (
         <div>
@@ -33,7 +37,11 @@ const InputSearch = (props) => {
                     className="w-full outline-none bg-transparent"
                     placeholder={placeholder ? placeholder : 'Tìm kiếm ...'}
                 />
-                <button onClick={() => setInputSearch('')} className=" border-none flex-shrink-0 text-slate-500">
+                <button onClick={() => {
+                    setInputSearch('')
+                    onChangeInput()
+                }
+                } className=" border-none flex-shrink-0 text-slate-500">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="w-6 h-6"

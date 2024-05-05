@@ -1,30 +1,58 @@
-import PropTypes from 'prop-types';
 import BoxCustom from '../Box/Box';
 import InputSearch from '../Input/InputSearch';
 import { Button } from '@mui/material';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import { Pagination } from 'antd';
+import { Spin } from 'antd';
 import { useEffect, useState } from 'react';
-import { useFormContext } from 'react-hook-form';
 import { ToastNotiError } from '../../utils/Utils';
 import Factories from '../../services/FactoryApi';
 
 const ChooseSpecialty = props => {
-    const { value, onChangeSpecialty, goBack } = props
-    function handleChangeSpeciality(id) {
-        onChangeSpecialty(id)
-    }
+    const { value, valueDoctor, onChangeSpecialty, goBack } = props
+    const [loading, setLoading] = useState();
+
+    const [branchInfo, setBranchInfo] = useState();
     const [listData, setListData] = useState([]);
-    const fetchData = async () => {
+    const fetchData = async (input = null, value) => {
+        setLoading(true)
         try {
-            const response = await Factories.getBranchList(null, value);
-            setListData(response?.departments);
+            const response = await Factories.getBranchList(null, value, input);
+
+            let branch = {
+                _id: response._id,
+                address: response.address,
+                name: response.name,
+            }
+            setBranchInfo(branch);
+
+            if (valueDoctor) {
+                const newListDepartments = filterDataByDoctorId(response.departments, valueDoctor)
+                setListData(newListDepartments);
+            } else {
+                setListData(response?.departments);
+            }
+            setLoading(false)
         } catch (error) {
             ToastNotiError(error);
+            setLoading(false)
         }
     };
+
+    function filterDataByDoctorId(listData, valueDoctor) {
+        let filterData = []
+        listData.forEach(element => {
+            if (element.doctorIds.includes(valueDoctor)) {
+                filterData.push(element)
+            }
+        });
+        return filterData
+    }
+    function handleChangeSpecialty(id) {
+        onChangeSpecialty(id, branchInfo)
+    }
+
     useEffect(() => {
-        fetchData();
+        fetchData(null, value);
     }, [value]);
 
     return (
@@ -38,10 +66,10 @@ const ChooseSpecialty = props => {
                         description={
                             <div className='flex flex-col gap-2'>
                                 <span className="text-[#111] font-bold" >
-                                    Bệnh viện Đại học Y Dược TP.HCM
+                                    {branchInfo?.name}
                                 </span>
                                 <span className="leading-4 text-sm" >
-                                    Cơ sở 201 Nguyễn Chí Thanh, Phường 12, Quận 5, TP. Hồ Chí Minh
+                                    {branchInfo?.address}
                                 </span>
                             </div>
                         }
@@ -58,24 +86,29 @@ const ChooseSpecialty = props => {
                                 <InputSearch
                                     className="border rounded-md border-gray-light w-full "
                                     placeholder='Tìm kiếm chuyên khoa'
+                                    onChangeInput={(valueInput) => fetchData(valueInput, value)}
                                 />
-
-                                <div>
-                                    {listData?.map(item => (
-                                        <div key={item.id} className='border-t border-t-gray-light py-4'>
-                                            <button onClick={() => handleChangeSpeciality(item._id)} className='border-none'>
-                                                <span className="w-full text-xl uppercase hover:text-blue2 text-[#111] font-bold">
-                                                    {item.name}
-                                                </span>
-                                            </button>
+                                {loading ? <Spin className="my-10" size="large" />
+                                    : <>
+                                        <div>
+                                            {listData?.map(item => (
+                                                <div key={item._id} className='border-t border-t-gray-light py-4'>
+                                                    <button onClick={() => handleChangeSpecialty(item._id)} className='border-none'>
+                                                        <span className="w-full text-xl uppercase hover:text-blue2 text-[#111] font-bold">
+                                                            {item.name}
+                                                        </span>
+                                                    </button>
+                                                </div>
+                                            ))}
                                         </div>
-                                    ))}
-                                </div>
+                                    </>
+                                }
+
 
                                 <Button
                                     startIcon={<ArrowBackIosNewIcon />}
                                     onClick={goBack}
-                                    className='w-28' href="#text-buttons">
+                                    className='w-28'>
                                     Quay lại
                                 </Button>
                             </div>

@@ -1,15 +1,13 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AccountUser from "./Options/Enterprises/AccountUser";
 import Booking from "./Options/Book/Booking";
-import Fields from "./Options/Fields/Fields"
+import ScheduleDoctorAdmin from "./Options/Fields/ScheduleDoctorAdmin"
 import { Layout, Menu, Button } from "antd";
 import classes from './HomeAdmin.module.scss'
-import AccountDoctor from './Options/PGT/AccountDoctor';
+import AccountDoctor from './Options/Doctors/AccountDoctor';
 import Statistical from "./Options/Statistical/Statistical";
 import Title from "antd/es/typography/Title";
-import AccountFactories from "../../services/AccountFactories";
-import { ToastNotiError } from "../../utils/Utils";
 const { Sider } = Layout;
 import Logo from '../../assets/logo/header_logo.svg'
 import ManagerBranch from "./Options/Branch/ManagerBranch";
@@ -42,8 +40,8 @@ const HomeAdmin = () => {
             mode="inline"
           >
             <Title level={3}>
-              {/* <span style={{ marginLeft: 20, color: '#111' }} >{'ADMIN'} </span> */}
-              <img className='text-center h-16 w-48' src={Logo} />
+              <span style={{ marginLeft: 20, color: '#706233' }} >{'Quản lý'} </span>
+              <img className='text-center h-16 w-48' src={'https://medpro.vn/_next/image?url=https%3A%2F%2Fbo-api.medpro.com.vn%2Fstatic%2Fimages%2Fmedpro%2Fweb%2Fheader_logo.svg&w=1920&q=75'} />
             </Title>
             {/* <Menu.SubMenu className="submenu" key="sub1" title="Tài Khoản"> */}
             {/* <Menu.Item key="1">Enterprises</Menu.Item> */}
@@ -56,7 +54,7 @@ const HomeAdmin = () => {
             <Menu.Item key="7">Thống kê</Menu.Item>
             <Button
               onClick={logoutHandler}
-              className={classes['btn-logout']}
+              className=" absolute bottom-2 left-10 text-[#fff] "
             >Đăng xuất</Button>
           </Menu>
 
@@ -68,7 +66,7 @@ const HomeAdmin = () => {
             {selectedMenuItem === "2" && <AccountDoctor />}
             {selectedMenuItem === "3" && <Booking />}
             {selectedMenuItem === "4" && <ManagerBranch />}
-            {selectedMenuItem === "5" && <Fields />}
+            {selectedMenuItem === "5" && <ScheduleDoctorAdmin />}
             {selectedMenuItem === "7" && <Statistical />}
           </Layout.Content>
         </Layout>

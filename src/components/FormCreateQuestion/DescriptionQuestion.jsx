@@ -1,60 +1,89 @@
 import { Typography } from 'antd';
 import { useForm } from 'react-hook-form';
 import { Button } from '@mui/material';
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getDistricts, getProvinces, getWards } from '../../utils/Location/location';
+import Factories from '../../services/FactoryApi';
+import { ToastNotiError } from '../../utils/Utils';
+import { AuthContext } from '../../context/auth.context';
 const { Title } = Typography;
 const DescriptionQuestion = () => {
-    const { register, handleSubmit, watch, formState: { errors } } = useForm();
     const [provincesList, setProvincesList] = useState([]);
     const [districts, setDistricts] = useState([]);
     const [wards, setWards] = useState([]);
+    // const watchProvince = watch('ProvinceId')
+    // const watchDistrict = watch('DistrictId')
+
+    const { register, handleSubmit, setValue, formState: { errors } } = useForm();
+    const [loading, setLoading] = useState()
     const navigate = useNavigate()
-    const watchProvince = watch('ProvinceId')
-    const watchDistrict = watch('DistrictId')
-
-
-    const onSubmit = (data) => {
-        console.log(data);
+    const { user } = useContext(AuthContext);
+    useEffect(() => {
+        setValue('fullName', 'Hoàng Văn Nam')
+        setValue('age', 22)
+        setValue('phone', '0358014472')
+        setValue('email', 'doctor4@gmail.com')
+        setValue('content', 'Đối tượng nào nên đi khám sức khỏe định kỳ ?')
+        setValue('gender', 'Female')
+        setValue('title', 'Ai nên đi khám định kỳ')
+    }, [])
+    const onSubmit = async (data) => {
+        setLoading(true)
+        const newData = { ...data }
+        try {
+            if (user) {
+                newData.user_id = user.id
+            }
+            const response = await Factories.createQuestion(newData);
+            if (response?._id) {
+                navigate('/question/1')
+            } else {
+                ToastNotiError(response?.message);
+                setLoading(false)
+            }
+        } catch (error) {
+            ToastNotiError(error);
+            setLoading(false)
+        }
     };
 
-    useEffect(() => {
-        async function fetchData() {
-            try {
-                const provinces = await getProvinces();
-                setProvincesList(provinces);
-            } catch (error) {
-                console.error("Error fetching provinces:", error);
-            }
-        }
-        fetchData();
-    }, []);
+    // useEffect(() => {
+    //     async function fetchData() {
+    //         try {
+    //             const provinces = await getProvinces();
+    //             setProvincesList(provinces);
+    //         } catch (error) {
+    //             console.error("Error fetching provinces:", error);
+    //         }
+    //     }
+    //     fetchData();
+    // }, []);
 
-    useEffect(() => {
-        async function fetchDataDistrict() {
-            try {
-                const list = await getWards(watchDistrict);
-                setWards(list);
-            } catch (error) {
-                console.error("Error fetching provinces:", error);
-            }
-        }
-        fetchDataDistrict();
-    }, [watchDistrict]);
+    // useEffect(() => {
+    //     async function fetchDataDistrict() {
+    //         try {
+    //             const list = await getWards(watchDistrict);
+    //             setWards(list);
+    //         } catch (error) {
+    //             console.error("Error fetching provinces:", error);
+    //         }
+    //     }
+    //     fetchDataDistrict();
+    // }, [watchDistrict]);
 
-    useEffect(() => {
-        async function fetchDataDistrict() {
-            try {
-                const districtList = await getDistricts(watchProvince);
-                setDistricts(districtList);
-            } catch (error) {
-                console.error("Error fetching provinces:", error);
-            }
-        }
-        fetchDataDistrict();
-    }, [watchProvince]);
+    // useEffect(() => {
+    //     async function fetchDataDistrict() {
+    //         try {
+    //             const districtList = await getDistricts(watchProvince);
+    //             setDistricts(districtList);
+    //         } catch (error) {
+    //             console.error("Error fetching provinces:", error);
+    //         }
+    //     }
+    //     fetchDataDistrict();
+    // }, [watchProvince]);
 
 
     return (
@@ -81,10 +110,11 @@ const DescriptionQuestion = () => {
                             type="text"
                             placeholder="dd/mm/yyyy"
                             className="w-full border border-slate-200 rounded-lg py-3 px-3 outline-none  bg-transparent"
+                            {...register('gender', { required: true })}
                         >
                             <option className='rounded-sm' value="">Chọn giới tính</option>
-                            <option value="male">Nam</option>
-                            <option value="female">Nữ</option>
+                            <option value="Female">Nam</option>
+                            <option value="Male">Nữ</option>
                             <option value="other">Khác</option>
                         </select>
                         {errors.gender && <span className="text-red">Bắt buộc nhập thông tin</span>}
@@ -104,26 +134,31 @@ const DescriptionQuestion = () => {
                     <div className='w-1/2'>
                         <Title level={4}>Số điện thoại *</Title>
                         <input
-                            type="tel" id="phone"
+                            type="number"
+                            maxLength={10}
+                            id="phone"
                             placeholder="09202020201"
-                            pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" 
+                            pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
                             className="w-full border border-slate-200 rounded-lg py-3 px-5 outline-none  bg-transparent"
-                            {...register('job', { required: true })}
+                            {...register('phone', {
+                                required: true,
+                                minLength: 10, maxLength: 10
+                            })}
                         />
-                        {errors.job && <span className="text-red">Bắt buộc nhập thông tin</span>}
+                        {errors.phone && <span className="text-red">Bắt buộc nhập thông tin</span>}
                     </div>
                     <div className='w-1/2'>
-                        <Title level={4}>Địa chỉ Email *</Title>
+                        <Title level={4}>Địa chỉ email *</Title>
                         <input
                             type="email"
                             placeholder="nguyenvana@gmail.com"
                             className="w-full border border-slate-200 rounded-lg py-3 px-5 outline-none  bg-transparent"
-                            {...register('Email', { required: true })}
+                            {...register('email', { required: true })}
                         />
-                        {errors.Email && <span className="text-red">Bắt buộc nhập thông tin</span>}
+                        {errors.email && <span className="text-red">Bắt buộc nhập thông tin</span>}
                     </div>
                 </div>
-                <div className="flex flex-row gap-10 justify-between">
+                {/* <div className="flex flex-row gap-10 justify-between">
                     <div className='w-1/2'>
                         <Title level={4}>Tỉnh / Thành *</Title>
                         <select
@@ -152,8 +187,8 @@ const DescriptionQuestion = () => {
                         </select>
                         {errors.DistrictId && <span className="text-red">Bắt buộc nhập thông tin</span>}
                     </div>
-                </div>
-                <div className="flex flex-row gap-10 justify-between">
+                </div> */}
+                {/* <div className="flex flex-row gap-10 justify-between">
                     <div className='' style={{ width: 'calc(50% - 20px )' }}>
                         <Title level={4}>Phường / Xã *</Title>
                         <select
@@ -169,23 +204,36 @@ const DescriptionQuestion = () => {
                         {errors.WardId && <span className="text-red">Bắt buộc nhập thông tin</span>}
                     </div>
 
+                </div> */}
+                <div className="flex flex-row gap-10 justify-between">
+                    <div className='w-full'>
+                        <Title level={4}>Tiêu đề câu hỏi(*) </Title>
+                        <input
+                            className="w-full border  border-slate-200 rounded-lg py-3 px-3 outline-none  bg-transparent"
+                            type="text"
+                            placeholder="Tiêu đề câu hỏi"
+                            {...register('title', { required: true })}
+                        />
+                        {errors.title && <span className="text-red">Bắt buộc nhập thông tin</span>}
+
+                    </div>
                 </div>
                 <div className="flex flex-row gap-10 justify-between">
                     <div className='w-full'>
-                        <Title level={4}>Đặt câu hỏi(*) </Title>
+                        <Title level={4}>Nội dung câu hỏi(*) </Title>
                         <textarea
                             className="w-full border min-h-44 border-slate-200 rounded-lg py-3 px-3 outline-none  bg-transparent"
                             type="text"
-                            placeholder="Nội dung"
-                            {...register('Content', { required: true })}
+                            placeholder="Nội dung hỏi đáp"
+                            {...register('content', { required: true })}
                         />
-                        {errors.Content && <span className="text-red">Bắt buộc nhập thông tin</span>}
+                        {errors.content && <span className="text-red">Bắt buộc nhập thông tin</span>}
 
                     </div>
                 </div>
 
                 <div className="flex flex-row items-end justify-end">
-                    <Button type="submit" variant="contained" className='w-44 float-right rounded-md'>Gửi câu hỏi</Button>
+                    <Button disabled={loading} type="submit" variant="contained" className='w-44 float-right rounded-md'>Gửi câu hỏi</Button>
                 </div>
             </form>
         </div>

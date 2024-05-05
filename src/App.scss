@@ -9,8 +9,8 @@
 .selectAntd {
   background: transparent;
   border: none;
-
   .ant-select-selector {
+    width: 200px;
     border: none !important;
   }
 }
@@ -49,10 +49,9 @@
   &:hover {
     cursor: pointer !important;
     box-shadow: 0 4px 30px 0 rgba(116, 157, 206, .2);
-    transform: translateY(-.2rem);
+    // transform: translateY(-.1rem);
     border: 1px solid #00b5f1 !important;
   }
-
 }
 
 .boxNotHover {

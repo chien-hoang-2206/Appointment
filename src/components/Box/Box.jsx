@@ -2,7 +2,7 @@ import { Skeleton } from 'antd';
 import { Card } from 'antd';
 import PropTypes from 'prop-types';
 const BoxCustom = props => {
-    const { title, alignTitle, actions, onClick, isCanHover = true, description } = props
+    const { title, alignTitle, actions, onClick, isCanHover = false, description } = props
     const classNames = `${isCanHover ? 'boxHover' : 'boxNotHover '}`;
     return (
         <div className={classNames}>

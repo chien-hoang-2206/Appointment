@@ -1,7 +1,7 @@
 import { Button } from '@mui/material';
 import PropTypes from 'prop-types';
 
-const ButonOutLine = props => {
+const ButtonOutLine = props => {
     const { children, onClick = () => { }, size, borderRadius } = props
     const getSizeStyles = () => {
         switch (size) {
@@ -51,7 +51,7 @@ const ButonOutLine = props => {
     );
 };
 
-ButonOutLine.propTypes = {
+ButtonOutLine.propTypes = {
 };
 
-export default ButonOutLine;
+export default ButtonOutLine;
