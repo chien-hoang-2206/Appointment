@@ -35,7 +35,7 @@ const Booking = () => {
 
   useEffect(() => {
     fetchDataBookingList();
-  }, []);
+  }, [dateCreate,DateBooking]);
 
 
   const handleKeyDown = (event) => {

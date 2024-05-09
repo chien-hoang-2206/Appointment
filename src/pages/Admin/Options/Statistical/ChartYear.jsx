@@ -59,13 +59,13 @@ const ChartYear = (props) => {
             const response = await Factories.getBookingTopDT(year, month);
             if (response) {
                 const responseData = response
-                const labels = responseData.map(item => `${item.user_name}`);
-                const totalTime = responseData.map(item => parseInt(item.total_duration_minutes, 10));
+                const labels = responseData.map(item => `${item.doctorId}`);
+                const totalTime = responseData.map(item => parseInt(item.bookingCount));
                 const barData3 = {
                     labels: labels,
                     datasets: [
                         {
-                            label: "Top Bác sĩ Có số giờ khám cao nhất",
+                            label: "Top Bác sĩ Có số lượt khám cao nhất",
                             backgroundColor: "rgb(75, 192, 192)", // Teal
                             data: totalTime
                         }
@@ -83,7 +83,7 @@ const ChartYear = (props) => {
         setLoading(true);
         fetchDataYear(year, month);
         setLoading(false);
-        // fetchDataTop(year);
+        fetchDataTop(year,month);
     }, [year, month, Status]);
 
     const options1 = {
@@ -216,7 +216,6 @@ const ChartYear = (props) => {
                                 options={options2}
                             />
                         }
-
                     </div>
                     {barData3?.labels &&
                         <div>
